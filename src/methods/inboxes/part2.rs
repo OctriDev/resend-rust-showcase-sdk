@@ -6,375 +6,15 @@ use crate::client::ClientConfig;
 use crate::client::{sdk_request, RequestOptions, RequestOpts};
 use crate::errors::{SdkError, SdkNetworkError};
 use crate::types::{
-    CreateInboxLabelResponseSuccess, CreateInboxResponseSuccess, Inbox, InboxAgent,
-    ListInboxLabelsResponseSuccess, ListInboxesResponseSuccess, RemoveInboxResponseSuccess,
-    UpdateInboxAgentResponseSuccess, UpdateInboxLabelResponseSuccess, UpdateInboxResponseSuccess,
+    CreateInboxLabelResponseSuccess, ListInboxLabelsResponseSuccess,
+    ListInboxThreadsResponseSuccess, RemoveInboxLabelResponseSuccess,
+    UpdateInboxAgentOptionsEnabledActionsItemEnum, UpdateInboxAgentOptionsToneEnum,
+    UpdateInboxAgentResponseSuccess, UpdateInboxLabelResponseSuccess,
 };
 use crate::validation::{
-    validate_length, validate_pattern, validate_range, validate_uuid, LengthOpts, RangeOpts,
+    validate_items, validate_length, validate_pattern, validate_range, validate_uuid, LengthOpts,
+    RangeOpts,
 };
-
-impl serde::Serialize for UpdateInboxThreadOptionsFolderEnum {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(self.as_str())
-    }
-}
-
-impl<'de> serde::Deserialize<'de> for UpdateInboxThreadOptionsFolderEnum {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
-        Ok(match value.as_str() {
-            "archive" => Self::Archive,
-            "inbox" => Self::Inbox,
-            "spam" => Self::Spam,
-            "trash" => Self::Trash,
-            _ => Self::Unknown(value),
-        })
-    }
-}
-
-impl std::fmt::Display for UpdateInboxThreadOptionsFolderEnum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(self.as_str())
-    }
-}
-
-/// Creates an inbox that sends and receives email at an address on one of the team's domains. Supply `email_address` and choose whether to enable `forwarding`; the domain's verification requirements depend on that setting.
-///
-/// Creates an inbox that sends and receives email at an address on one of your domains. The domain must belong to the team. Without `forwarding`, the domain must have receiving enabled, with DKIM and SPF verified and the inbound MX record verified or pending. With `forwarding` set to `true`, the domain only needs DKIM and SPF verified for sending, and Resend generates a `receiving_address` on the team inbound domain, and a team without an inbound domain gets a 422\. A domain that does not meet these rules returns a 422 validation_error. An address or receiving address that is already in use returns a 409\. A team that has reached the inbox limit of its plan returns a 403 validation_error. A blocked account returns a 451.
-///
-/// # Arguments
-///
-/// * `email_address` - The inbox email address on one of your domains. The API
-///   trims and lowercases it. The part before the `@` is at most 64 characters
-///   and contains only letters, numbers, and `. _ % \+ -`. It cannot start or end
-///   with a dot or contain two dots in a row.
-/// * `name` - Internal name for the inbox. Recipients do not see it. Max 64
-///   characters. Defaults to `email_address`.
-/// * `from_name` - The name recipients see when mail is sent from this inbox. A
-///   plain name, not a `Name <email\>` address. Max 78 characters. It cannot
-///   contain a colon, `<`, `\>`, line breaks, or other control characters. An
-///   email address inside the name must be on a domain the team has verified for
-///   sending. An empty string leaves it unset.
-/// * `forwarding` - When `true`, Resend provisions a receiving address so you
-///   can receive mail without adding an MX record. The address is returned in
-///   `receiving_address`.
-pub fn inboxes_create(
-    config: &ClientConfig,
-    email_address: String,
-    name: Option<String>,
-    from_name: Option<String>,
-    forwarding: Option<bool>,
-    options: Option<&RequestOptions>,
-) -> Result<CreateInboxResponseSuccess, SdkError> {
-    if let Some(ref name_v) = name {
-        validate_length(
-            "name",
-            name_v,
-            LengthOpts {
-                max: Some(64),
-                ..Default::default()
-            },
-        )?;
-    }
-    if let Some(ref from_name_v) = from_name {
-        validate_length(
-            "from_name",
-            from_name_v,
-            LengthOpts {
-                max: Some(78),
-                ..Default::default()
-            },
-        )?;
-    }
-
-    let mut __body_map = serde_json::Map::new();
-    __body_map.insert(
-        "email_address".to_string(),
-        serde_json::to_value(email_address).map_err(|e| {
-            SdkError::Network(SdkNetworkError {
-                message: format!("encode body field: {}", e),
-                request_id: None,
-            })
-        })?,
-    );
-    if let Some(ref value) = name {
-        __body_map.insert(
-            "name".to_string(),
-            serde_json::to_value(value).map_err(|e| {
-                SdkError::Network(SdkNetworkError {
-                    message: format!("encode body field: {}", e),
-                    request_id: None,
-                })
-            })?,
-        );
-    }
-    if let Some(ref value) = from_name {
-        __body_map.insert(
-            "from_name".to_string(),
-            serde_json::to_value(value).map_err(|e| {
-                SdkError::Network(SdkNetworkError {
-                    message: format!("encode body field: {}", e),
-                    request_id: None,
-                })
-            })?,
-        );
-    }
-    if let Some(ref value) = forwarding {
-        __body_map.insert(
-            "forwarding".to_string(),
-            serde_json::to_value(value).map_err(|e| {
-                SdkError::Network(SdkNetworkError {
-                    message: format!("encode body field: {}", e),
-                    request_id: None,
-                })
-            })?,
-        );
-    }
-    let __body = serde_json::Value::Object(__body_map);
-
-    Ok(sdk_request::<CreateInboxResponseSuccess>(
-        "POST",
-        "/inboxes",
-        config,
-        RequestOpts {
-            body: Some(__body),
-            decoder: crate::client::ResponseDecoder::Json,
-            operation_id: "inboxes_create",
-            options,
-            ..Default::default()
-        },
-    )?
-    .data)
-}
-
-/// Lists the team's inboxes, ordered from newest to oldest. Use `after` or `before` with an inbox ID to navigate the results; list items include fewer fields than an individual inbox record.
-///
-/// Returns the inboxes of the team, newest first. The list items carry fewer fields than a single inbox. Retrieve an inbox to get all its fields. The `after` and `before` cursors take an inbox ID, and only one of them can be passed, or the request returns a 422\. A value that is not a UUID returns a 422, and an unknown ID returns a 404.
-///
-/// # Arguments
-///
-/// * `limit` - Number of items to return.
-/// * `after` - Return items after this cursor.
-/// * `before` - Return items before this cursor.
-pub fn inboxes_list(
-    config: &ClientConfig,
-    limit: Option<i64>,
-    after: Option<String>,
-    before: Option<String>,
-    options: Option<&RequestOptions>,
-) -> Result<ListInboxesResponseSuccess, SdkError> {
-    if let Some(ref limit_v) = limit {
-        validate_range(
-            "limit",
-            *limit_v as f64,
-            RangeOpts {
-                min: Some(1_f64),
-                max: Some(100_f64),
-                ..Default::default()
-            },
-        )?;
-    }
-
-    let mut __query: Vec<(&str, String)> = Vec::with_capacity(3);
-    if let Some(ref v) = limit {
-        __query.push(("limit", crate::client::query_value(v)));
-    }
-    if let Some(ref v) = after {
-        __query.push(("after", crate::client::query_value(v)));
-    }
-    if let Some(ref v) = before {
-        __query.push(("before", crate::client::query_value(v)));
-    }
-
-    Ok(sdk_request::<ListInboxesResponseSuccess>(
-        "GET",
-        "/inboxes",
-        config,
-        RequestOpts {
-            query: &__query,
-            decoder: crate::client::ResponseDecoder::Json,
-            operation_id: "inboxes_list",
-            options,
-            ..Default::default()
-        },
-    )?
-    .data)
-}
-
-/// Retrieves a single inbox by its ID or email address. Use an email address for a case-insensitive address lookup, or a UUID to look up the inbox by ID.
-///
-/// # Arguments
-///
-/// * `inbox_id` - The Inbox ID or the inbox email address, such as
-///   `support@acme.com`. A value that contains `@` must be a valid email address,
-///   and the match is case-insensitive. Any other value must be a UUID.
-pub fn inboxes_get(
-    config: &ClientConfig,
-    inbox_id: String,
-    options: Option<&RequestOptions>,
-) -> Result<Inbox, SdkError> {
-    Ok(sdk_request::<Inbox>(
-        "GET",
-        &format!("/inboxes/{}", crate::client::encode_path_segment(&inbox_id)),
-        config,
-        RequestOpts {
-            decoder: crate::client::ResponseDecoder::Json,
-            operation_id: "inboxes_get",
-            options,
-            ..Default::default()
-        },
-    )?
-    .data)
-}
-
-/// Updates an inbox's internal name or the sender name recipients see. Provide at least one of `name` or `from_name`; omitted values remain unchanged.
-///
-/// Updates the internal name of the inbox or the name recipients see when mail is sent from it. At least one of `name` or `from_name` is required.
-///
-/// # Arguments
-///
-/// * `inbox_id` - The Inbox ID. An email address is not accepted.
-/// * `name` - New internal name for the inbox. Recipients do not see it.
-///   Between 1 and 64 characters after trimming.
-/// * `from_name` - The name recipients see when mail is sent from this inbox. A
-///   plain name, not a `Name <email\>` address. Max 78 characters. It cannot
-///   contain a colon, `<`, `\>`, line breaks, or other control characters. An
-///   email address inside the name must be on a domain the team has verified for
-///   sending. An empty string removes it.
-pub fn inboxes_update(
-    config: &ClientConfig,
-    inbox_id: String,
-    name: Option<String>,
-    from_name: Option<String>,
-    options: Option<&RequestOptions>,
-) -> Result<UpdateInboxResponseSuccess, SdkError> {
-    validate_uuid("inbox_id", &inbox_id)?;
-    if let Some(ref name_v) = name {
-        validate_length(
-            "name",
-            name_v,
-            LengthOpts {
-                min: Some(1),
-                max: Some(64),
-            },
-        )?;
-    }
-    if let Some(ref from_name_v) = from_name {
-        validate_length(
-            "from_name",
-            from_name_v,
-            LengthOpts {
-                max: Some(78),
-                ..Default::default()
-            },
-        )?;
-    }
-
-    let mut __body_map = serde_json::Map::new();
-    if let Some(ref value) = name {
-        __body_map.insert(
-            "name".to_string(),
-            serde_json::to_value(value).map_err(|e| {
-                SdkError::Network(SdkNetworkError {
-                    message: format!("encode body field: {}", e),
-                    request_id: None,
-                })
-            })?,
-        );
-    }
-    if let Some(ref value) = from_name {
-        __body_map.insert(
-            "from_name".to_string(),
-            serde_json::to_value(value).map_err(|e| {
-                SdkError::Network(SdkNetworkError {
-                    message: format!("encode body field: {}", e),
-                    request_id: None,
-                })
-            })?,
-        );
-    }
-    let __body = serde_json::Value::Object(__body_map);
-
-    Ok(sdk_request::<UpdateInboxResponseSuccess>(
-        "PATCH",
-        &format!("/inboxes/{}", crate::client::encode_path_segment(&inbox_id)),
-        config,
-        RequestOpts {
-            body: Some(__body),
-            decoder: crate::client::ResponseDecoder::Json,
-            operation_id: "inboxes_update",
-            options,
-            ..Default::default()
-        },
-    )?
-    .data)
-}
-
-/// Deletes an existing inbox. Use its UUID as `inbox_id`; an email address is not accepted for this operation.
-///
-/// Removes the inbox. An inbox that does not exist or was already removed returns a 404 not_found.
-///
-/// # Arguments
-///
-/// * `inbox_id` - The Inbox ID. An email address is not accepted.
-pub fn inboxes_remove(
-    config: &ClientConfig,
-    inbox_id: String,
-    options: Option<&RequestOptions>,
-) -> Result<RemoveInboxResponseSuccess, SdkError> {
-    validate_uuid("inbox_id", &inbox_id)?;
-
-    Ok(sdk_request::<RemoveInboxResponseSuccess>(
-        "DELETE",
-        &format!("/inboxes/{}", crate::client::encode_path_segment(&inbox_id)),
-        config,
-        RequestOpts {
-            decoder: crate::client::ResponseDecoder::Json,
-            operation_id: "inboxes_remove",
-            options,
-            ..Default::default()
-        },
-    )?
-    .data)
-}
-
-/// Retrieves the agent settings for an inbox. An inbox without a configured agent has null `instructions` and `tone` values and an empty `enabled_actions` array.
-///
-/// Returns the agent settings of the inbox. An inbox without a configured agent returns empty settings: `instructions` and `tone` are null and `enabled_actions` is an empty array.
-///
-/// # Arguments
-///
-/// * `inbox_id` - The Inbox ID. An email address is not accepted.
-pub fn inboxes_get_agent(
-    config: &ClientConfig,
-    inbox_id: String,
-    options: Option<&RequestOptions>,
-) -> Result<InboxAgent, SdkError> {
-    validate_uuid("inbox_id", &inbox_id)?;
-
-    Ok(sdk_request::<InboxAgent>(
-        "GET",
-        &format!(
-            "/inboxes/{}/agent",
-            crate::client::encode_path_segment(&inbox_id)
-        ),
-        config,
-        RequestOpts {
-            decoder: crate::client::ResponseDecoder::Json,
-            operation_id: "inboxes_get_agent",
-            options,
-            ..Default::default()
-        },
-    )?
-    .data)
-}
 
 /// Updates the agent settings for an inbox, creating an agent if one is not configured. Provide at least one of `instructions`, `tone`, or `enabled_actions`; omitted fields keep their current values.
 ///
@@ -643,6 +283,161 @@ pub fn inboxes_update_label(
             body: Some(__body),
             decoder: crate::client::ResponseDecoder::Json,
             operation_id: "inboxes_update_label",
+            options,
+            ..Default::default()
+        },
+    )?
+    .data)
+}
+
+/// Deletes a label from an inbox and removes it from every thread that carries it. Use this endpoint when you want to remove the label itself as well as its associations with threads.
+///
+/// Deletes the label and removes it from every thread that carries it.
+///
+/// # Arguments
+///
+/// * `inbox_id` - The Inbox ID. An email address is not accepted.
+/// * `label_id` - The Label ID.
+pub fn inboxes_remove_label(
+    config: &ClientConfig,
+    inbox_id: String,
+    label_id: String,
+    options: Option<&RequestOptions>,
+) -> Result<RemoveInboxLabelResponseSuccess, SdkError> {
+    validate_uuid("inbox_id", &inbox_id)?;
+    validate_uuid("label_id", &label_id)?;
+
+    Ok(sdk_request::<RemoveInboxLabelResponseSuccess>(
+        "DELETE",
+        &format!(
+            "/inboxes/{}/labels/{}",
+            crate::client::encode_path_segment(&inbox_id),
+            crate::client::encode_path_segment(&label_id)
+        ),
+        config,
+        RequestOpts {
+            decoder: crate::client::ResponseDecoder::Json,
+            operation_id: "inboxes_remove_label",
+            options,
+            ..Default::default()
+        },
+    )?
+    .data)
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct InboxesListThreadsParams {
+    pub inbox_id: String,
+    pub folders: Option<Vec<InboxesListThreadsItemEnum>>,
+    pub labels: Option<Vec<String>>,
+    pub read: Option<bool>,
+    pub limit: Option<i64>,
+    pub after: Option<String>,
+    pub before: Option<String>,
+}
+
+/// Lists threads in an inbox, ordered by most recent activity first. Use `folders`, `labels`, or `read` to filter the results, and use `after` or `before` to navigate by thread ID; you can pass only one cursor at a time.
+///
+/// Returns the threads in an inbox, most recently active first. A thread is a conversation made up of one or more emails. The `after` and `before` cursors take a thread ID, and only one of them can be passed. A cursor that is not a UUID, such as a date, returns a 422 validation_error. A cursor thread that is not in the selected folders returns a 404\. To find threads by text, sender, recipient, attachment, or date, use the search threads endpoint.
+///
+/// # Arguments
+///
+/// * `inbox_id` - The Inbox ID. An email address is not accepted.
+/// * `folders` - Comma-separated folders to list, for example `inbox,sent`.
+///   Repeating the parameter returns a 422 validation_error. A thread is returned
+///   when any of its emails is in one of the folders, so a thread in `inbox` with
+///   an email you sent matches both `inbox` and `sent`. Defaults to `inbox`, or
+///   to `inbox,archive,sent` when `labels` is set. `spam` and `trash` are only
+///   included when you name them.
+/// * `labels` - Comma-separated label IDs. Returns threads with any of these
+///   labels. Up to 50 IDs. An ID that does not exist in the inbox returns a 404\.
+///   Repeating the parameter returns a 422 validation_error.
+/// * `read` - `true` returns threads where every email is read. `false` returns
+///   threads with at least one unread email. Only the literal values `true` and
+///   `false` are accepted.
+/// * `limit` - Number of items to return.
+/// * `after` - Return items after this cursor.
+/// * `before` - Return items before this cursor.
+pub fn inboxes_list_threads(
+    config: &ClientConfig,
+    params: InboxesListThreadsParams,
+    options: Option<&RequestOptions>,
+) -> Result<ListInboxThreadsResponseSuccess, SdkError> {
+    let InboxesListThreadsParams {
+        inbox_id,
+        folders,
+        labels,
+        read,
+        limit,
+        after,
+        before,
+    } = params;
+    validate_uuid("inbox_id", &inbox_id)?;
+    if let Some(ref labels_v) = labels {
+        validate_items(
+            "labels",
+            labels_v,
+            LengthOpts {
+                max: Some(50),
+                ..Default::default()
+            },
+        )?;
+    }
+    if let Some(ref limit_v) = limit {
+        validate_range(
+            "limit",
+            *limit_v as f64,
+            RangeOpts {
+                min: Some(1_f64),
+                max: Some(100_f64),
+                ..Default::default()
+            },
+        )?;
+    }
+
+    let mut __query: Vec<(&str, String)> = Vec::with_capacity(6);
+    if let Some(ref vec) = folders {
+        __query.push((
+            "folders",
+            vec.iter()
+                .map(crate::client::query_value)
+                .collect::<Vec<_>>()
+                .join(","),
+        ));
+    }
+    if let Some(ref vec) = labels {
+        __query.push((
+            "labels",
+            vec.iter()
+                .map(crate::client::query_value)
+                .collect::<Vec<_>>()
+                .join(","),
+        ));
+    }
+    if let Some(ref v) = read {
+        __query.push(("read", crate::client::query_value(v)));
+    }
+    if let Some(ref v) = limit {
+        __query.push(("limit", crate::client::query_value(v)));
+    }
+    if let Some(ref v) = after {
+        __query.push(("after", crate::client::query_value(v)));
+    }
+    if let Some(ref v) = before {
+        __query.push(("before", crate::client::query_value(v)));
+    }
+
+    Ok(sdk_request::<ListInboxThreadsResponseSuccess>(
+        "GET",
+        &format!(
+            "/inboxes/{}/threads",
+            crate::client::encode_path_segment(&inbox_id)
+        ),
+        config,
+        RequestOpts {
+            query: &__query,
+            decoder: crate::client::ResponseDecoder::Json,
+            operation_id: "inboxes_list_threads",
             options,
             ..Default::default()
         },

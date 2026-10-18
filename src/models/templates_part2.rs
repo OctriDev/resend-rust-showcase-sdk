@@ -3,6 +3,86 @@
 
 // templates domain models (part 2)
 
+impl<'de> serde::Deserialize<'de> for TemplateVariableFallbackValue {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<String>(value.clone()) {
+            let candidate = Self::String(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<f64>(value.clone()) {
+            let candidate = Self::Number(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<bool>(value.clone()) {
+            let candidate = Self::Bool(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Vec<serde_json::Value>>(value.clone()) {
+            let candidate = Self::ValueArray(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<serde_json::Value>(value.clone()) {
+            let candidate = Self::Value(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom("no TemplateVariableFallbackValue branch accepts this payload")
+        })
+    }
+}
+
+/// Typed representation of the `TemplateVariable` API schema.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct TemplateVariable {
+    /// The ID of the template variable.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub id: Option<String>,
+    /// The key of the variable.
+    pub key: String,
+    /// The type of the variable.
+    #[serde(rename = "type")]
+    pub type_: TemplateVariableTypeEnum,
+    /// The fallback value of the variable.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fallback_value: Option<TemplateVariableFallbackValue>,
+    /// Timestamp indicating when the variable was created.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub created_at: Option<String>,
+    /// Timestamp indicating when the variable was last updated.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub updated_at: Option<String>,
+}
+
+impl TemplateVariable {
+    pub fn new(key: String, type_: TemplateVariableTypeEnum) -> Self {
+        Self {
+            id: None,
+            key,
+            type_,
+            fallback_value: None,
+            created_at: None,
+            updated_at: None,
+        }
+    }
+}
+
 /// The type of the variable.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub enum TemplateVariableInputTypeEnum {
@@ -60,13 +140,61 @@ impl std::fmt::Display for TemplateVariableInputTypeEnum {
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum TemplateVariableInputFallbackValue {
     String(String),
     Number(f64),
     Bool(bool),
     ValueArray(Vec<serde_json::Value>),
+    Value(serde_json::Value),
+}
+
+impl<'de> serde::Deserialize<'de> for TemplateVariableInputFallbackValue {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<String>(value.clone()) {
+            let candidate = Self::String(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<f64>(value.clone()) {
+            let candidate = Self::Number(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<bool>(value.clone()) {
+            let candidate = Self::Bool(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Vec<serde_json::Value>>(value.clone()) {
+            let candidate = Self::ValueArray(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<serde_json::Value>(value.clone()) {
+            let candidate = Self::Value(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom(
+                "no TemplateVariableInputFallbackValue branch accepts this payload",
+            )
+        })
+    }
 }
 
 /// Typed representation of the `TemplateVariableInput` API schema.

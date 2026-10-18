@@ -5,9 +5,9 @@ use crate::client::ClientConfig;
 use crate::client::{sdk_request, RequestOptions, RequestOpts};
 use crate::errors::{SdkError, SdkNetworkError};
 use crate::types::{
-    Attachment, CreateBatchEmailsResponse, Email, ListAttachmentsResponse, ListEmailsResponse,
-    RetrievedAttachment, SendEmailRequest, SendEmailRequestBcc, SendEmailRequestCc,
-    SendEmailRequestReplyTo, SendEmailRequestTemplate, SendEmailRequestTo, SendEmailResponse,
+    Attachment, CreateBatchEmailsResponse, Email, EmailTemplateInput, ListAttachmentsResponse,
+    ListEmailsResponse, RetrievedAttachment, SendEmailRequest, SendEmailRequestBcc,
+    SendEmailRequestCc, SendEmailRequestReplyTo, SendEmailRequestTo, SendEmailResponse,
     ShareEmailResponse, Tag, UpdateEmailOptions,
 };
 use crate::validation::{validate_length, validate_range, validate_uuid, LengthOpts, RangeOpts};
@@ -23,7 +23,7 @@ pub struct EmailsSendParams {
     pub reply_to: Option<SendEmailRequestReplyTo>,
     pub html: Option<String>,
     pub text: Option<String>,
-    pub template: Option<SendEmailRequestTemplate>,
+    pub template: Option<EmailTemplateInput>,
     pub headers: Option<serde_json::Value>,
     pub scheduled_at: Option<String>,
     pub attachments: Option<Vec<Attachment>>,
@@ -51,7 +51,8 @@ pub struct EmailsSendParams {
 ///   array of strings.
 /// * `html` - The HTML version of the message.
 /// * `text` - The plain text version of the message.
-/// * `template` - Optional API value serialized in the `template` wire field.
+/// * `template` - Use a published template to send the email. If provided, do
+///   not include html or text.
 /// * `headers` - Custom headers to add to the email.
 /// * `scheduled_at` - Schedule email to be sent later. The date should be in
 ///   ISO 8601 format.

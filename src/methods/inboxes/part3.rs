@@ -6,167 +6,13 @@ use crate::client::ClientConfig;
 use crate::client::{sdk_request, RequestOptions, RequestOpts};
 use crate::errors::{SdkError, SdkNetworkError};
 use crate::types::{
-    InboxThreadSummary, ListInboxThreadsResponseSuccess, RemoveInboxLabelResponseSuccess,
-    SearchInboxThreadsResponseSuccess,
+    InboxThreadEmail, InboxThreadSummary, ListInboxThreadEmailsResponseSuccess,
+    RemoveInboxThreadResponseSuccess, SearchInboxThreadsResponseSuccess,
+    UpdateInboxThreadOptionsFolderEnum,
 };
 use crate::validation::{
     validate_items, validate_length, validate_range, validate_uuid, LengthOpts, RangeOpts,
 };
-
-/// Deletes a label from an inbox and removes it from every thread that carries it. Use this endpoint when you want to remove the label itself as well as its associations with threads.
-///
-/// Deletes the label and removes it from every thread that carries it.
-///
-/// # Arguments
-///
-/// * `inbox_id` - The Inbox ID. An email address is not accepted.
-/// * `label_id` - The Label ID.
-pub fn inboxes_remove_label(
-    config: &ClientConfig,
-    inbox_id: String,
-    label_id: String,
-    options: Option<&RequestOptions>,
-) -> Result<RemoveInboxLabelResponseSuccess, SdkError> {
-    validate_uuid("inbox_id", &inbox_id)?;
-    validate_uuid("label_id", &label_id)?;
-
-    Ok(sdk_request::<RemoveInboxLabelResponseSuccess>(
-        "DELETE",
-        &format!(
-            "/inboxes/{}/labels/{}",
-            crate::client::encode_path_segment(&inbox_id),
-            crate::client::encode_path_segment(&label_id)
-        ),
-        config,
-        RequestOpts {
-            decoder: crate::client::ResponseDecoder::Json,
-            operation_id: "inboxes_remove_label",
-            options,
-            ..Default::default()
-        },
-    )?
-    .data)
-}
-
-#[derive(Debug, Clone, Default)]
-pub struct InboxesListThreadsParams {
-    pub inbox_id: String,
-    pub folders: Option<Vec<InboxesListThreadsItemEnum>>,
-    pub labels: Option<Vec<String>>,
-    pub read: Option<bool>,
-    pub limit: Option<i64>,
-    pub after: Option<String>,
-    pub before: Option<String>,
-}
-
-/// Lists threads in an inbox, ordered by most recent activity first. Use `folders`, `labels`, or `read` to filter the results, and use `after` or `before` to navigate by thread ID; you can pass only one cursor at a time.
-///
-/// Returns the threads in an inbox, most recently active first. A thread is a conversation made up of one or more emails. The `after` and `before` cursors take a thread ID, and only one of them can be passed. A cursor that is not a UUID, such as a date, returns a 422 validation_error. A cursor thread that is not in the selected folders returns a 404\. To find threads by text, sender, recipient, attachment, or date, use the search threads endpoint.
-///
-/// # Arguments
-///
-/// * `inbox_id` - The Inbox ID. An email address is not accepted.
-/// * `folders` - Comma-separated folders to list, for example `inbox,sent`.
-///   Repeating the parameter returns a 422 validation_error. A thread is returned
-///   when any of its emails is in one of the folders, so a thread in `inbox` with
-///   an email you sent matches both `inbox` and `sent`. Defaults to `inbox`, or
-///   to `inbox,archive,sent` when `labels` is set. `spam` and `trash` are only
-///   included when you name them.
-/// * `labels` - Comma-separated label IDs. Returns threads with any of these
-///   labels. Up to 50 IDs. An ID that does not exist in the inbox returns a 404\.
-///   Repeating the parameter returns a 422 validation_error.
-/// * `read` - `true` returns threads where every email is read. `false` returns
-///   threads with at least one unread email. Only the literal values `true` and
-///   `false` are accepted.
-/// * `limit` - Number of items to return.
-/// * `after` - Return items after this cursor.
-/// * `before` - Return items before this cursor.
-pub fn inboxes_list_threads(
-    config: &ClientConfig,
-    params: InboxesListThreadsParams,
-    options: Option<&RequestOptions>,
-) -> Result<ListInboxThreadsResponseSuccess, SdkError> {
-    let InboxesListThreadsParams {
-        inbox_id,
-        folders,
-        labels,
-        read,
-        limit,
-        after,
-        before,
-    } = params;
-    validate_uuid("inbox_id", &inbox_id)?;
-    if let Some(ref labels_v) = labels {
-        validate_items(
-            "labels",
-            labels_v,
-            LengthOpts {
-                max: Some(50),
-                ..Default::default()
-            },
-        )?;
-    }
-    if let Some(ref limit_v) = limit {
-        validate_range(
-            "limit",
-            *limit_v as f64,
-            RangeOpts {
-                min: Some(1_f64),
-                max: Some(100_f64),
-                ..Default::default()
-            },
-        )?;
-    }
-
-    let mut __query: Vec<(&str, String)> = Vec::with_capacity(6);
-    if let Some(ref vec) = folders {
-        __query.push((
-            "folders",
-            vec.iter()
-                .map(crate::client::query_value)
-                .collect::<Vec<_>>()
-                .join(","),
-        ));
-    }
-    if let Some(ref vec) = labels {
-        __query.push((
-            "labels",
-            vec.iter()
-                .map(crate::client::query_value)
-                .collect::<Vec<_>>()
-                .join(","),
-        ));
-    }
-    if let Some(ref v) = read {
-        __query.push(("read", crate::client::query_value(v)));
-    }
-    if let Some(ref v) = limit {
-        __query.push(("limit", crate::client::query_value(v)));
-    }
-    if let Some(ref v) = after {
-        __query.push(("after", crate::client::query_value(v)));
-    }
-    if let Some(ref v) = before {
-        __query.push(("before", crate::client::query_value(v)));
-    }
-
-    Ok(sdk_request::<ListInboxThreadsResponseSuccess>(
-        "GET",
-        &format!(
-            "/inboxes/{}/threads",
-            crate::client::encode_path_segment(&inbox_id)
-        ),
-        config,
-        RequestOpts {
-            query: &__query,
-            decoder: crate::client::ResponseDecoder::Json,
-            operation_id: "inboxes_list_threads",
-            options,
-            ..Default::default()
-        },
-    )?
-    .data)
-}
 
 #[derive(Debug, Clone, Default)]
 pub struct InboxesSearchThreadsParams {
@@ -581,6 +427,155 @@ pub fn inboxes_update_thread(
             body: Some(__body),
             decoder: crate::client::ResponseDecoder::Json,
             operation_id: "inboxes_update_thread",
+            options,
+            ..Default::default()
+        },
+    )?
+    .data)
+}
+
+/// Moves a thread to the `trash` folder and schedules it for deletion in 30 days. The move is reversible; update the thread’s `folder` to `inbox`, `archive`, or `spam` to restore it and clear the deletion deadline.
+///
+/// Moves the thread to `trash` and schedules it for deletion in 30 days. This is reversible. To restore the thread, update its `folder` to `inbox`, `archive`, or `spam`, which also clears the deletion deadline.
+///
+/// # Arguments
+///
+/// * `inbox_id` - The Inbox ID. An email address is not accepted.
+/// * `thread_id` - The Thread ID.
+pub fn inboxes_remove_thread(
+    config: &ClientConfig,
+    inbox_id: String,
+    thread_id: String,
+    options: Option<&RequestOptions>,
+) -> Result<RemoveInboxThreadResponseSuccess, SdkError> {
+    validate_uuid("inbox_id", &inbox_id)?;
+    validate_uuid("thread_id", &thread_id)?;
+
+    Ok(sdk_request::<RemoveInboxThreadResponseSuccess>(
+        "DELETE",
+        &format!(
+            "/inboxes/{}/threads/{}",
+            crate::client::encode_path_segment(&inbox_id),
+            crate::client::encode_path_segment(&thread_id)
+        ),
+        config,
+        RequestOpts {
+            decoder: crate::client::ResponseDecoder::Json,
+            operation_id: "inboxes_remove_thread",
+            options,
+            ..Default::default()
+        },
+    )?
+    .data)
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct InboxesListThreadEmailsParams {
+    pub inbox_id: String,
+    pub thread_id: String,
+    pub limit: Option<i64>,
+    pub after: Option<String>,
+    pub before: Option<String>,
+}
+
+/// Lists the messages in a thread, ordered from oldest to newest. Use `after` with the last message ID to retrieve a newer page, or `before` with the first message ID to retrieve an older page; pass only one cursor at a time.
+///
+/// Returns the messages of a thread, oldest first. Pass the `id` of the last message as `after` to get the next, newer page. Pass the `id` of the first message as `before` to get the previous, older page. Passing both `after` and `before`, or a cursor that is not a UUID, returns a 422\. A cursor that is not a message of the thread returns a 404.
+///
+/// # Arguments
+///
+/// * `inbox_id` - The Inbox ID. An email address is not accepted.
+/// * `thread_id` - The Thread ID.
+/// * `limit` - Number of items to return.
+/// * `after` - Return items after this cursor.
+/// * `before` - Return items before this cursor.
+pub fn inboxes_list_thread_emails(
+    config: &ClientConfig,
+    params: InboxesListThreadEmailsParams,
+    options: Option<&RequestOptions>,
+) -> Result<ListInboxThreadEmailsResponseSuccess, SdkError> {
+    let InboxesListThreadEmailsParams {
+        inbox_id,
+        thread_id,
+        limit,
+        after,
+        before,
+    } = params;
+    validate_uuid("inbox_id", &inbox_id)?;
+    validate_uuid("thread_id", &thread_id)?;
+    if let Some(ref limit_v) = limit {
+        validate_range(
+            "limit",
+            *limit_v as f64,
+            RangeOpts {
+                min: Some(1_f64),
+                max: Some(100_f64),
+                ..Default::default()
+            },
+        )?;
+    }
+
+    let mut __query: Vec<(&str, String)> = Vec::with_capacity(3);
+    if let Some(ref v) = limit {
+        __query.push(("limit", crate::client::query_value(v)));
+    }
+    if let Some(ref v) = after {
+        __query.push(("after", crate::client::query_value(v)));
+    }
+    if let Some(ref v) = before {
+        __query.push(("before", crate::client::query_value(v)));
+    }
+
+    Ok(sdk_request::<ListInboxThreadEmailsResponseSuccess>(
+        "GET",
+        &format!(
+            "/inboxes/{}/threads/{}/emails",
+            crate::client::encode_path_segment(&inbox_id),
+            crate::client::encode_path_segment(&thread_id)
+        ),
+        config,
+        RequestOpts {
+            query: &__query,
+            decoder: crate::client::ResponseDecoder::Json,
+            operation_id: "inboxes_list_thread_emails",
+            options,
+            ..Default::default()
+        },
+    )?
+    .data)
+}
+
+/// Retrieves a specific email from an inbox thread. Use the inbox, thread, and email identifiers to select the message whose details you need.
+///
+/// # Arguments
+///
+/// * `inbox_id` - The Inbox ID. An email address is not accepted.
+/// * `thread_id` - The Thread ID.
+/// * `email_id` - The Email ID, as returned in `data[].id` by the list thread
+///   emails endpoint.
+pub fn inboxes_get_thread_email(
+    config: &ClientConfig,
+    inbox_id: String,
+    thread_id: String,
+    email_id: String,
+    options: Option<&RequestOptions>,
+) -> Result<InboxThreadEmail, SdkError> {
+    validate_uuid("inbox_id", &inbox_id)?;
+    validate_uuid("thread_id", &thread_id)?;
+    validate_uuid("email_id", &email_id)?;
+
+    Ok(sdk_request::<InboxThreadEmail>(
+        "GET",
+        &format!(
+            "/inboxes/{}/threads/{}/emails/{}",
+            crate::client::encode_path_segment(&inbox_id),
+            crate::client::encode_path_segment(&thread_id),
+            crate::client::encode_path_segment(&email_id)
+        ),
+        config,
+        RequestOpts {
+            decoder: crate::client::ResponseDecoder::Json,
+            operation_id: "inboxes_get_thread_email",
             options,
             ..Default::default()
         },

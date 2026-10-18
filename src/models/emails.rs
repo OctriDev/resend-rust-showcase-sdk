@@ -231,6 +231,39 @@ impl EmailMetricsDataRow {
     }
 }
 
+#[derive(Debug, Clone, serde::Serialize)]
+#[serde(untagged)]
+pub enum EmailTemplateInputVariablesValue {
+    String(String),
+    Number(f64),
+}
+
+impl<'de> serde::Deserialize<'de> for EmailTemplateInputVariablesValue {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<String>(value.clone()) {
+            let candidate = Self::String(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<f64>(value.clone()) {
+            let candidate = Self::Number(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom(
+                "no EmailTemplateInputVariablesValue branch accepts this payload",
+            )
+        })
+    }
+}
+
 /// Typed representation of the `EmailTemplateInput` API schema.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct EmailTemplateInput {
@@ -428,47 +461,9 @@ impl ListEmailsResponse {
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum SendEmailRequestTo {
     String(String),
     StringArray(Vec<String>),
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum SendEmailRequestBcc {
-    String(String),
-    StringArray(Vec<String>),
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum SendEmailRequestCc {
-    String(String),
-    StringArray(Vec<String>),
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum SendEmailRequestReplyTo {
-    String(String),
-    StringArray(Vec<String>),
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum EmailTemplateInputVariablesValue {
-    String(String),
-    Number(f64),
-}
-
-/// Optional API value serialized in the `template` wire field.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct SendEmailRequestTemplate {
-    /// The id of the published email template.
-    pub id: String,
-    /// Template variables object with key/value pairs.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub variables: Option<std::collections::HashMap<String, EmailTemplateInputVariablesValue>>,
 }

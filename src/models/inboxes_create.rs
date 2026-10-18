@@ -3,25 +3,97 @@
 
 // inboxes_create domain models
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum CreateInboxDraftOptionsTo {
     String(String),
     StringArray(Vec<String>),
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+impl<'de> serde::Deserialize<'de> for CreateInboxDraftOptionsTo {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<String>(value.clone()) {
+            let candidate = Self::String(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Vec<String>>(value.clone()) {
+            let candidate = Self::StringArray(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom("no CreateInboxDraftOptionsTo branch accepts this payload")
+        })
+    }
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum CreateInboxDraftOptionsCc {
     String(String),
     StringArray(Vec<String>),
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+impl<'de> serde::Deserialize<'de> for CreateInboxDraftOptionsCc {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<String>(value.clone()) {
+            let candidate = Self::String(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Vec<String>>(value.clone()) {
+            let candidate = Self::StringArray(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom("no CreateInboxDraftOptionsCc branch accepts this payload")
+        })
+    }
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum CreateInboxDraftOptionsBcc {
     String(String),
     StringArray(Vec<String>),
+}
+
+impl<'de> serde::Deserialize<'de> for CreateInboxDraftOptionsBcc {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<String>(value.clone()) {
+            let candidate = Self::String(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Vec<String>>(value.clone()) {
+            let candidate = Self::StringArray(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom("no CreateInboxDraftOptionsBcc branch accepts this payload")
+        })
+    }
 }
 
 /// At least one of `to`, `cc`, `bcc`, `subject`, `text`, `html` or `attachments` must be non-empty. The combined recipients of `to`, `cc` and `bcc` cannot exceed 50\. `thread_id` and `reply_to_email_id` must be sent together or not at all.
