@@ -5,298 +5,12 @@ use crate::client::ClientConfig;
 use crate::client::{sdk_request, RequestOptions, RequestOpts};
 use crate::errors::{SdkError, SdkNetworkError};
 use crate::types::{
-    Attachment, CreateInboxDraftOptionsBcc, CreateInboxDraftOptionsCc, CreateInboxDraftOptionsTo,
-    CreateInboxDraftResponseSuccess, ForwardInboxThreadEmailOptionsBcc,
-    ForwardInboxThreadEmailOptionsCc, ForwardInboxThreadEmailOptionsTo,
-    ForwardInboxThreadEmailResponseSuccess, InboxDraft, InboxDraftAttachmentInput,
-    ListInboxDraftsResponseSuccess,
+    CreateInboxDraftOptionsBcc, CreateInboxDraftOptionsCc, CreateInboxDraftOptionsTo,
+    CreateInboxDraftResponseSuccess, InboxDraft, InboxDraftAttachmentInput,
+    RemoveInboxDraftResponseSuccess, SendInboxDraftResponseSuccess, UpdateInboxDraftOptionsBcc,
+    UpdateInboxDraftOptionsCc, UpdateInboxDraftOptionsTo,
 };
-use crate::validation::{validate_length, validate_range, validate_uuid, LengthOpts, RangeOpts};
-
-#[derive(Debug, Clone)]
-pub struct InboxesForwardThreadEmailParams {
-    pub inbox_id: String,
-    pub thread_id: String,
-    pub email_id: String,
-    pub to: ForwardInboxThreadEmailOptionsTo,
-    pub idempotency_key: Option<String>,
-    pub cc: Option<Option<ForwardInboxThreadEmailOptionsCc>>,
-    pub bcc: Option<Option<ForwardInboxThreadEmailOptionsBcc>>,
-    pub html: Option<String>,
-    pub text: Option<String>,
-    pub subject: Option<String>,
-    pub attachments: Option<Option<Vec<Attachment>>>,
-    pub headers: Option<Option<std::collections::HashMap<String, String>>>,
-}
-
-/// Submits a forward of a message from the inbox address directly, without storing a draft. Supply `to` recipients and optionally add a note with `html` or `text`; the original message is quoted and its attachments are included. Added attachments share the original message's limit of 10 files and 25 MB of content.
-///
-/// Forwards a message from the inbox address right away, with no stored draft. The original message is quoted under a forwarded-message banner, below the optional `html` or `text` note. The attachments of the original message are sent with the forward, together with any `attachments` you add. The request fails when they exceed 10 files or 25 MB of `content` in total. An original attachment that was sent from a URL (`path`) cannot be forwarded, and the request returns a 422\. The whole email, encoded, can be at most 40 MB, or the request returns a 422.
-///
-/// # Arguments
-///
-/// * `inbox_id` - The Inbox ID. An email address is not accepted.
-/// * `thread_id` - The Thread ID.
-/// * `email_id` - The Email ID of the message to forward, as returned in
-///   `data[].id` by the list thread emails endpoint.
-/// * `to` - Recipient email address. For multiple addresses, send as an array
-///   of strings. Must name at least one address. `to`, `cc` and `bcc` combined
-///   cannot exceed 50 recipients. Each address is `email@example.com` or `Name
-///   <email@example.com\>`. An address that is not valid returns a 422.
-/// * `idempotency_key` - A unique key for the request, so the forward is sent
-///   only once. A retry with the same key within 24 hours returns the first
-///   successful (2xx) response, with the `idempotent-replayed: true` header. A
-///   failed request is not stored, so it can be retried with the same key.
-///   Reusing the key with a different body, or while the first request is still
-///   running, returns a 409\. An empty key, or one longer than 256 characters,
-///   returns a 400 `invalid_idempotency_key`. [Learn
-///   more](https://resend.com/docs/dashboard/emails/idempotency-keys)
-/// * `cc` - CC recipient email address. For multiple addresses, send as an
-///   array of strings. Counts toward the 50-recipient limit. Each address is
-///   `email@example.com` or `Name <email@example.com\>`. An address that is not
-///   valid returns a 422.
-/// * `bcc` - BCC recipient email address. For multiple addresses, send as an
-///   array of strings. Counts toward the 50-recipient limit. Each address is
-///   `email@example.com` or `Name <email@example.com\>`. An address that is not
-///   valid returns a 422.
-/// * `html` - An HTML note sent above the quoted original.
-/// * `text` - A plain-text note sent above the quoted original.
-/// * `subject` - The subject of the forward. Cannot be only whitespace or
-///   contain a line break. When omitted, the thread subject is used, prefixed
-///   with `Fwd:` if it does not already start with it.
-/// * `attachments` - Files to attach, as on `POST /emails`. Each one needs
-///   `content` or `path`. They share one limit with the attachments of the
-///   original message, which the forward also sends. Together they can have up to
-///   10 files and at most 25 MB of `content`. A `path` file counts toward the 10
-///   files only, because it is fetched when the email is sent. An empty file, a
-///   blocked file type, a `path` that is not an `http` or `https` URL or that
-///   points to `localhost`, `127.0.0.1` or `0.0.0.0`, or a `content_type` that is
-///   not a valid MIME type returns a 422.
-/// * `headers` - Custom headers to add to the email. The `In-Reply-To`,
-///   `References` and `Reply-To` headers are set by Resend and cannot be set
-///   here. Sending one of them, in any letter case, returns a 422\. Header names
-///   cannot be empty, and names and values cannot contain line breaks or null
-///   characters, or the request returns a 422\. `null` means no custom headers.
-pub fn inboxes_forward_thread_email(
-    config: &ClientConfig,
-    params: InboxesForwardThreadEmailParams,
-    options: Option<&RequestOptions>,
-) -> Result<ForwardInboxThreadEmailResponseSuccess, SdkError> {
-    let InboxesForwardThreadEmailParams {
-        inbox_id,
-        thread_id,
-        email_id,
-        to,
-        idempotency_key,
-        cc,
-        bcc,
-        html,
-        text,
-        subject,
-        attachments,
-        headers,
-    } = params;
-    validate_uuid("inbox_id", &inbox_id)?;
-    validate_uuid("thread_id", &thread_id)?;
-    validate_uuid("email_id", &email_id)?;
-    if let Some(ref idempotency_key_v) = idempotency_key {
-        validate_length(
-            "Idempotency-Key",
-            idempotency_key_v,
-            LengthOpts {
-                min: Some(1),
-                max: Some(256),
-            },
-        )?;
-    }
-    if let Some(ref subject_v) = subject {
-        validate_length(
-            "subject",
-            subject_v,
-            LengthOpts {
-                min: Some(1),
-                max: Some(2000),
-            },
-        )?;
-    }
-
-    let mut __headers: Vec<(String, String)> = Vec::with_capacity(1);
-    if let Some(ref value) = idempotency_key {
-        __headers.push((
-            "Idempotency-Key".to_string(),
-            crate::client::header_value(value, false),
-        ));
-    }
-
-    let mut __body_map = serde_json::Map::new();
-    __body_map.insert(
-        "to".to_string(),
-        serde_json::to_value(to).map_err(|e| {
-            SdkError::Network(SdkNetworkError {
-                message: format!("encode body field: {}", e),
-                request_id: None,
-            })
-        })?,
-    );
-    if let Some(ref value) = cc {
-        __body_map.insert(
-            "cc".to_string(),
-            serde_json::to_value(value).map_err(|e| {
-                SdkError::Network(SdkNetworkError {
-                    message: format!("encode body field: {}", e),
-                    request_id: None,
-                })
-            })?,
-        );
-    }
-    if let Some(ref value) = bcc {
-        __body_map.insert(
-            "bcc".to_string(),
-            serde_json::to_value(value).map_err(|e| {
-                SdkError::Network(SdkNetworkError {
-                    message: format!("encode body field: {}", e),
-                    request_id: None,
-                })
-            })?,
-        );
-    }
-    if let Some(ref value) = html {
-        __body_map.insert(
-            "html".to_string(),
-            serde_json::to_value(value).map_err(|e| {
-                SdkError::Network(SdkNetworkError {
-                    message: format!("encode body field: {}", e),
-                    request_id: None,
-                })
-            })?,
-        );
-    }
-    if let Some(ref value) = text {
-        __body_map.insert(
-            "text".to_string(),
-            serde_json::to_value(value).map_err(|e| {
-                SdkError::Network(SdkNetworkError {
-                    message: format!("encode body field: {}", e),
-                    request_id: None,
-                })
-            })?,
-        );
-    }
-    if let Some(ref value) = subject {
-        __body_map.insert(
-            "subject".to_string(),
-            serde_json::to_value(value).map_err(|e| {
-                SdkError::Network(SdkNetworkError {
-                    message: format!("encode body field: {}", e),
-                    request_id: None,
-                })
-            })?,
-        );
-    }
-    if let Some(ref value) = attachments {
-        __body_map.insert(
-            "attachments".to_string(),
-            serde_json::to_value(value).map_err(|e| {
-                SdkError::Network(SdkNetworkError {
-                    message: format!("encode body field: {}", e),
-                    request_id: None,
-                })
-            })?,
-        );
-    }
-    if let Some(ref value) = headers {
-        __body_map.insert(
-            "headers".to_string(),
-            serde_json::to_value(value).map_err(|e| {
-                SdkError::Network(SdkNetworkError {
-                    message: format!("encode body field: {}", e),
-                    request_id: None,
-                })
-            })?,
-        );
-    }
-    let __body = serde_json::Value::Object(__body_map);
-
-    Ok(sdk_request::<ForwardInboxThreadEmailResponseSuccess>(
-        "POST",
-        &format!(
-            "/inboxes/{}/threads/{}/emails/{}/forward",
-            crate::client::encode_path_segment(&inbox_id),
-            crate::client::encode_path_segment(&thread_id),
-            crate::client::encode_path_segment(&email_id)
-        ),
-        config,
-        RequestOpts {
-            headers: __headers,
-            body: Some(__body),
-            decoder: crate::client::ResponseDecoder::Json,
-            operation_id: "inboxes_forward_thread_email",
-            options,
-            ..Default::default()
-        },
-    )?
-    .data)
-}
-
-/// Lists unsent drafts in an inbox, ordered by most recently updated. Use `after` or `before` with a Draft ID from the current page to navigate results; do not supply both cursors together.
-///
-/// Returns the unsent drafts on the inbox, most recently updated first. The `after` and `before` cursors take a Draft ID from the current page, and only one of them can be passed. A cursor that is not a UUID, or both cursors together, return a 422\. A cursor that is not an unsent draft on this inbox returns a 404.
-///
-/// # Arguments
-///
-/// * `inbox_id` - The Inbox ID. An email address is not accepted.
-/// * `limit` - Number of items to return.
-/// * `after` - Return items after this cursor.
-/// * `before` - Return items before this cursor.
-pub fn inboxes_list_drafts(
-    config: &ClientConfig,
-    inbox_id: String,
-    limit: Option<i64>,
-    after: Option<String>,
-    before: Option<String>,
-    options: Option<&RequestOptions>,
-) -> Result<ListInboxDraftsResponseSuccess, SdkError> {
-    validate_uuid("inbox_id", &inbox_id)?;
-    if let Some(ref limit_v) = limit {
-        validate_range(
-            "limit",
-            *limit_v as f64,
-            RangeOpts {
-                min: Some(1_f64),
-                max: Some(100_f64),
-                ..Default::default()
-            },
-        )?;
-    }
-
-    let mut __query: Vec<(&str, String)> = Vec::with_capacity(3);
-    if let Some(ref v) = limit {
-        __query.push(("limit", crate::client::query_value(v)));
-    }
-    if let Some(ref v) = after {
-        __query.push(("after", crate::client::query_value(v)));
-    }
-    if let Some(ref v) = before {
-        __query.push(("before", crate::client::query_value(v)));
-    }
-
-    Ok(sdk_request::<ListInboxDraftsResponseSuccess>(
-        "GET",
-        &format!(
-            "/inboxes/{}/drafts",
-            crate::client::encode_path_segment(&inbox_id)
-        ),
-        config,
-        RequestOpts {
-            query: &__query,
-            decoder: crate::client::ResponseDecoder::Json,
-            operation_id: "inboxes_list_drafts",
-            options,
-            ..Default::default()
-        },
-    )?
-    .data)
-}
+use crate::validation::{validate_length, validate_uuid, LengthOpts};
 
 #[derive(Debug, Clone, Default)]
 pub struct InboxesCreateDraftParams {
@@ -552,6 +266,294 @@ pub fn inboxes_get_draft(
         RequestOpts {
             decoder: crate::client::ResponseDecoder::Json,
             operation_id: "inboxes_get_draft",
+            options,
+            ..Default::default()
+        },
+    )?
+    .data)
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct InboxesUpdateDraftParams {
+    pub inbox_id: String,
+    pub draft_id: String,
+    pub to: Option<Option<UpdateInboxDraftOptionsTo>>,
+    pub cc: Option<Option<UpdateInboxDraftOptionsCc>>,
+    pub bcc: Option<Option<UpdateInboxDraftOptionsBcc>>,
+    pub subject: Option<Option<String>>,
+    pub html: Option<Option<String>>,
+    pub text: Option<Option<String>>,
+    pub attachments: Option<Option<Vec<InboxDraftAttachmentInput>>>,
+}
+
+/// Updates the content of an unsent draft in an inbox. Send only the fields you want to change; sending `attachments` replaces all attachments, while sending `text` or `html` replaces the entire body. The merged draft must retain at least one non-empty field and no more than 50 combined recipients.
+///
+/// Updates the content of an unsent draft. Omitted fields are left unchanged. Send at least one of `to`, `cc`, `bcc`, `subject`, `text`, `html` or `attachments`. Sending `attachments` replaces every attachment on the draft. A request that sets `text` or `html` replaces the whole body. The body part you omit from that request becomes `null`. The merged draft must still contain at least one non-empty field, and its combined recipients cannot exceed 50\. A draft that was already sent, or that changed during the request, returns a 409.
+///
+/// # Arguments
+///
+/// * `inbox_id` - The Inbox ID. An email address is not accepted.
+/// * `draft_id` - The Draft ID.
+/// * `to` - The recipients. For multiple addresses, send an array of strings.
+///   Each value can include a friendly name. Pass `null` to clear. Each address
+///   is `email@example.com` or `Name <email@example.com\>`. An address that is
+///   not valid returns a 422.
+/// * `cc` - The CC recipients. Pass `null` or `[]` to clear. Each address is
+///   `email@example.com` or `Name <email@example.com\>`. An address that is not
+///   valid returns a 422.
+/// * `bcc` - The BCC recipients. Pass `null` or `[]` to clear. Each address is
+///   `email@example.com` or `Name <email@example.com\>`. An address that is not
+///   valid returns a 422.
+/// * `subject` - The subject. Max 2000 characters. Cannot be only whitespace or
+///   contain a line break. Pass `null` to clear.
+/// * `html` - The HTML body. Pass `null` to clear.
+/// * `text` - The plain text body. Pass `null` to clear.
+/// * `attachments` - Files to store on the draft. Each one needs `content`,
+///   `filename` and `content_type`. A `path` without `content` returns a 422, and
+///   when both are sent, `path` is ignored. A `content_id` returns a 422\. The
+///   files on a draft can total at most 25 MB. An empty file or a blocked file
+///   type returns a 422\. Sending the field replaces every attachment on the
+///   draft. Send `[]` to remove them all. `null` also removes them all.
+pub fn inboxes_update_draft(
+    config: &ClientConfig,
+    params: InboxesUpdateDraftParams,
+    options: Option<&RequestOptions>,
+) -> Result<InboxDraft, SdkError> {
+    let InboxesUpdateDraftParams {
+        inbox_id,
+        draft_id,
+        to,
+        cc,
+        bcc,
+        subject,
+        html,
+        text,
+        attachments,
+    } = params;
+    validate_uuid("inbox_id", &inbox_id)?;
+    validate_uuid("draft_id", &draft_id)?;
+    if let Some(Some(ref subject_v)) = &subject {
+        validate_length(
+            "subject",
+            subject_v,
+            LengthOpts {
+                min: Some(1),
+                max: Some(2000),
+            },
+        )?;
+    }
+
+    let mut __body_map = serde_json::Map::new();
+    if let Some(ref value) = to {
+        __body_map.insert(
+            "to".to_string(),
+            serde_json::to_value(value).map_err(|e| {
+                SdkError::Network(SdkNetworkError {
+                    message: format!("encode body field: {}", e),
+                    request_id: None,
+                })
+            })?,
+        );
+    }
+    if let Some(ref value) = cc {
+        __body_map.insert(
+            "cc".to_string(),
+            serde_json::to_value(value).map_err(|e| {
+                SdkError::Network(SdkNetworkError {
+                    message: format!("encode body field: {}", e),
+                    request_id: None,
+                })
+            })?,
+        );
+    }
+    if let Some(ref value) = bcc {
+        __body_map.insert(
+            "bcc".to_string(),
+            serde_json::to_value(value).map_err(|e| {
+                SdkError::Network(SdkNetworkError {
+                    message: format!("encode body field: {}", e),
+                    request_id: None,
+                })
+            })?,
+        );
+    }
+    if let Some(ref value) = subject {
+        __body_map.insert(
+            "subject".to_string(),
+            serde_json::to_value(value).map_err(|e| {
+                SdkError::Network(SdkNetworkError {
+                    message: format!("encode body field: {}", e),
+                    request_id: None,
+                })
+            })?,
+        );
+    }
+    if let Some(ref value) = html {
+        __body_map.insert(
+            "html".to_string(),
+            serde_json::to_value(value).map_err(|e| {
+                SdkError::Network(SdkNetworkError {
+                    message: format!("encode body field: {}", e),
+                    request_id: None,
+                })
+            })?,
+        );
+    }
+    if let Some(ref value) = text {
+        __body_map.insert(
+            "text".to_string(),
+            serde_json::to_value(value).map_err(|e| {
+                SdkError::Network(SdkNetworkError {
+                    message: format!("encode body field: {}", e),
+                    request_id: None,
+                })
+            })?,
+        );
+    }
+    if let Some(ref value) = attachments {
+        __body_map.insert(
+            "attachments".to_string(),
+            serde_json::to_value(value).map_err(|e| {
+                SdkError::Network(SdkNetworkError {
+                    message: format!("encode body field: {}", e),
+                    request_id: None,
+                })
+            })?,
+        );
+    }
+    let __body = serde_json::Value::Object(__body_map);
+
+    Ok(sdk_request::<InboxDraft>(
+        "PATCH",
+        &format!(
+            "/inboxes/{}/drafts/{}",
+            crate::client::encode_path_segment(&inbox_id),
+            crate::client::encode_path_segment(&draft_id)
+        ),
+        config,
+        RequestOpts {
+            body: Some(__body),
+            decoder: crate::client::ResponseDecoder::Json,
+            operation_id: "inboxes_update_draft",
+            options,
+            ..Default::default()
+        },
+    )?
+    .data)
+}
+
+/// Deletes an unsent draft from an inbox. Use the inbox and draft identifiers to select the draft to discard; drafts that have already been sent are not eligible for removal.
+///
+/// Discards an unsent draft. A draft that was already sent, or that changed during the request, returns a 409.
+///
+/// # Arguments
+///
+/// * `inbox_id` - The Inbox ID. An email address is not accepted.
+/// * `draft_id` - The Draft ID.
+pub fn inboxes_remove_draft(
+    config: &ClientConfig,
+    inbox_id: String,
+    draft_id: String,
+    options: Option<&RequestOptions>,
+) -> Result<RemoveInboxDraftResponseSuccess, SdkError> {
+    validate_uuid("inbox_id", &inbox_id)?;
+    validate_uuid("draft_id", &draft_id)?;
+
+    Ok(sdk_request::<RemoveInboxDraftResponseSuccess>(
+        "DELETE",
+        &format!(
+            "/inboxes/{}/drafts/{}",
+            crate::client::encode_path_segment(&inbox_id),
+            crate::client::encode_path_segment(&draft_id)
+        ),
+        config,
+        RequestOpts {
+            decoder: crate::client::ResponseDecoder::Json,
+            operation_id: "inboxes_remove_draft",
+            options,
+            ..Default::default()
+        },
+    )?
+    .data)
+}
+
+/// Submits an unsent draft from the inbox address. A reply draft is sent in its existing thread, while a standalone draft starts a new thread; you can add custom headers in the optional request body. Before sending, the draft must have at least one recipient, a non-empty subject, and an HTML or plain-text body.
+///
+/// Sends the draft from the inbox address. A reply draft is sent in its thread. A draft without a thread starts a new thread. The draft must have at least one `to` recipient, a non-empty `subject`, and `html` or `text`, or the request returns a 422\. A draft that was already sent returns a 409\. The request body is optional and takes only `headers`. The whole email, encoded, can be at most 40 MB, or the request returns a 422.
+///
+/// # Arguments
+///
+/// * `inbox_id` - The Inbox ID. An email address is not accepted.
+/// * `draft_id` - The Draft ID.
+/// * `idempotency_key` - A unique key for the request, so the draft is sent
+///   only once. A retry with the same key within 24 hours returns the first
+///   successful (2xx) response, with the `idempotent-replayed: true` header. A
+///   failed request is not stored, so it can be retried with the same key.
+///   Reusing the key with a different body, or while the first request is still
+///   running, returns a 409\. An empty key, or one longer than 256 characters,
+///   returns a 400 `invalid_idempotency_key`. [Learn
+///   more](https://resend.com/docs/dashboard/emails/idempotency-keys)
+/// * `headers` - Custom headers to add to the email. The `In-Reply-To`,
+///   `References` and `Reply-To` headers are set by Resend and cannot be set
+///   here. Sending one of them, in any letter case, returns a 422\. Header names
+///   cannot be empty, and names and values cannot contain line breaks or null
+///   characters, or the request returns a 422\. `null` means no custom headers.
+pub fn inboxes_send_draft(
+    config: &ClientConfig,
+    inbox_id: String,
+    draft_id: String,
+    idempotency_key: Option<String>,
+    headers: Option<Option<std::collections::HashMap<String, String>>>,
+    options: Option<&RequestOptions>,
+) -> Result<SendInboxDraftResponseSuccess, SdkError> {
+    validate_uuid("inbox_id", &inbox_id)?;
+    validate_uuid("draft_id", &draft_id)?;
+    if let Some(ref idempotency_key_v) = idempotency_key {
+        validate_length(
+            "Idempotency-Key",
+            idempotency_key_v,
+            LengthOpts {
+                min: Some(1),
+                max: Some(256),
+            },
+        )?;
+    }
+
+    let mut __headers: Vec<(String, String)> = Vec::with_capacity(1);
+    if let Some(ref value) = idempotency_key {
+        __headers.push((
+            "Idempotency-Key".to_string(),
+            crate::client::header_value(value, false),
+        ));
+    }
+
+    let mut __body_map = serde_json::Map::new();
+    if let Some(ref value) = headers {
+        __body_map.insert(
+            "headers".to_string(),
+            serde_json::to_value(value).map_err(|e| {
+                SdkError::Network(SdkNetworkError {
+                    message: format!("encode body field: {}", e),
+                    request_id: None,
+                })
+            })?,
+        );
+    }
+    let __body = serde_json::Value::Object(__body_map);
+
+    Ok(sdk_request::<SendInboxDraftResponseSuccess>(
+        "POST",
+        &format!(
+            "/inboxes/{}/drafts/{}/send",
+            crate::client::encode_path_segment(&inbox_id),
+            crate::client::encode_path_segment(&draft_id)
+        ),
+        config,
+        RequestOpts {
+            headers: __headers,
+            body: Some(__body),
+            decoder: crate::client::ResponseDecoder::Json,
+            operation_id: "inboxes_send_draft",
             options,
             ..Default::default()
         },

@@ -47,6 +47,7 @@ include!("models/inboxes_remove.rs");
 include!("models/inboxes_reply.rs");
 include!("models/inboxes_send.rs");
 include!("models/inboxes_update.rs");
+include!("models/inboxes_update_part2.rs");
 include!("models/logs.rs");
 include!("models/misc.rs");
 include!("models/oauth.rs");

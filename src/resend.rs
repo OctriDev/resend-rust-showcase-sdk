@@ -1547,10 +1547,8 @@ impl InboxesNamespace {
         &self,
         inbox_id: String,
         instructions: Option<Option<String>>,
-        tone: Option<Option<crate::methods::inboxes::UpdateInboxAgentOptionsToneEnum>>,
-        enabled_actions: Option<
-            Vec<crate::methods::inboxes::UpdateInboxAgentOptionsEnabledActionsItemEnum>,
-        >,
+        tone: Option<Option<UpdateInboxAgentOptionsToneEnum>>,
+        enabled_actions: Option<Vec<UpdateInboxAgentOptionsEnabledActionsItemEnum>>,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<UpdateInboxAgentResponseSuccess, crate::errors::SdkError> {
         crate::methods::inboxes::inboxes_update_agent(

@@ -441,46 +441,12 @@ impl std::fmt::Display for TemplateVariableTypeEnum {
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum TemplateVariableFallbackValue {
     String(String),
     Number(f64),
     Bool(bool),
     ValueArray(Vec<serde_json::Value>),
-}
-
-/// Typed representation of the `TemplateVariable` API schema.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct TemplateVariable {
-    /// The ID of the template variable.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub id: Option<String>,
-    /// The key of the variable.
-    pub key: String,
-    /// The type of the variable.
-    #[serde(rename = "type")]
-    pub type_: TemplateVariableTypeEnum,
-    /// The fallback value of the variable.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub fallback_value: Option<TemplateVariableFallbackValue>,
-    /// Timestamp indicating when the variable was created.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub created_at: Option<String>,
-    /// Timestamp indicating when the variable was last updated.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub updated_at: Option<String>,
-}
-
-impl TemplateVariable {
-    pub fn new(key: String, type_: TemplateVariableTypeEnum) -> Self {
-        Self {
-            id: None,
-            key,
-            type_,
-            fallback_value: None,
-            created_at: None,
-            updated_at: None,
-        }
-    }
+    Value(serde_json::Value),
 }
