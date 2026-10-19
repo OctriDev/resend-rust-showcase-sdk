@@ -36,6 +36,18 @@ impl<'de> serde::Deserialize<'de> for ReplyInboxThreadEmailOptionsCc {
     }
 }
 
+impl ::std::convert::From<String> for ReplyInboxThreadEmailOptionsCc {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Vec<String>> for ReplyInboxThreadEmailOptionsCc {
+    fn from(value: Vec<String>) -> Self {
+        Self::StringArray(value)
+    }
+}
+
 #[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum ReplyInboxThreadEmailOptionsBcc {
@@ -66,6 +78,18 @@ impl<'de> serde::Deserialize<'de> for ReplyInboxThreadEmailOptionsBcc {
                 "no ReplyInboxThreadEmailOptionsBcc branch accepts this payload",
             )
         })
+    }
+}
+
+impl ::std::convert::From<String> for ReplyInboxThreadEmailOptionsBcc {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Vec<String>> for ReplyInboxThreadEmailOptionsBcc {
+    fn from(value: Vec<String>) -> Self {
+        Self::StringArray(value)
     }
 }
 

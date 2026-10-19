@@ -48,6 +48,36 @@ impl<'de> serde::Deserialize<'de> for TemplateVariableFallbackValue {
     }
 }
 
+impl ::std::convert::From<String> for TemplateVariableFallbackValue {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<f64> for TemplateVariableFallbackValue {
+    fn from(value: f64) -> Self {
+        Self::Number(value)
+    }
+}
+
+impl ::std::convert::From<bool> for TemplateVariableFallbackValue {
+    fn from(value: bool) -> Self {
+        Self::Bool(value)
+    }
+}
+
+impl ::std::convert::From<Vec<serde_json::Value>> for TemplateVariableFallbackValue {
+    fn from(value: Vec<serde_json::Value>) -> Self {
+        Self::ValueArray(value)
+    }
+}
+
+impl ::std::convert::From<serde_json::Value> for TemplateVariableFallbackValue {
+    fn from(value: serde_json::Value) -> Self {
+        Self::Value(value)
+    }
+}
+
 /// Typed representation of the `TemplateVariable` API schema.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct TemplateVariable {
@@ -194,6 +224,36 @@ impl<'de> serde::Deserialize<'de> for TemplateVariableInputFallbackValue {
                 "no TemplateVariableInputFallbackValue branch accepts this payload",
             )
         })
+    }
+}
+
+impl ::std::convert::From<String> for TemplateVariableInputFallbackValue {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<f64> for TemplateVariableInputFallbackValue {
+    fn from(value: f64) -> Self {
+        Self::Number(value)
+    }
+}
+
+impl ::std::convert::From<bool> for TemplateVariableInputFallbackValue {
+    fn from(value: bool) -> Self {
+        Self::Bool(value)
+    }
+}
+
+impl ::std::convert::From<Vec<serde_json::Value>> for TemplateVariableInputFallbackValue {
+    fn from(value: Vec<serde_json::Value>) -> Self {
+        Self::ValueArray(value)
+    }
+}
+
+impl ::std::convert::From<serde_json::Value> for TemplateVariableInputFallbackValue {
+    fn from(value: serde_json::Value) -> Self {
+        Self::Value(value)
     }
 }
 
