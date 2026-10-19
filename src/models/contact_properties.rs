@@ -84,6 +84,18 @@ impl<'de> serde::Deserialize<'de> for CreateContactPropertyOptionsFallbackValue 
     }
 }
 
+impl ::std::convert::From<String> for CreateContactPropertyOptionsFallbackValue {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<f64> for CreateContactPropertyOptionsFallbackValue {
+    fn from(value: f64) -> Self {
+        Self::Number(value)
+    }
+}
+
 /// Typed representation of the `CreateContactPropertyOptions` API schema.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct CreateContactPropertyOptions {
@@ -161,6 +173,18 @@ impl<'de> serde::Deserialize<'de> for GetContactPropertyResponseSuccessFallbackV
     }
 }
 
+impl ::std::convert::From<String> for GetContactPropertyResponseSuccessFallbackValue {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<f64> for GetContactPropertyResponseSuccessFallbackValue {
+    fn from(value: f64) -> Self {
+        Self::Number(value)
+    }
+}
+
 /// Typed representation of the `GetContactPropertyResponseSuccess` API schema.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct GetContactPropertyResponseSuccess {
@@ -224,6 +248,18 @@ impl<'de> serde::Deserialize<'de> for ListContactPropertiesResponseSuccessDataIt
             lossy.get_or_insert(candidate);
         }
         lossy.ok_or_else(|| serde::de::Error::custom("no ListContactPropertiesResponseSuccessDataItemFallbackValue branch accepts this payload"))
+    }
+}
+
+impl ::std::convert::From<String> for ListContactPropertiesResponseSuccessDataItemFallbackValue {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<f64> for ListContactPropertiesResponseSuccessDataItemFallbackValue {
+    fn from(value: f64) -> Self {
+        Self::Number(value)
     }
 }
 
@@ -340,6 +376,18 @@ impl<'de> serde::Deserialize<'de> for UpdateContactPropertyOptionsFallbackValue 
                 "no UpdateContactPropertyOptionsFallbackValue branch accepts this payload",
             )
         })
+    }
+}
+
+impl ::std::convert::From<String> for UpdateContactPropertyOptionsFallbackValue {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<f64> for UpdateContactPropertyOptionsFallbackValue {
+    fn from(value: f64) -> Self {
+        Self::Number(value)
     }
 }
 

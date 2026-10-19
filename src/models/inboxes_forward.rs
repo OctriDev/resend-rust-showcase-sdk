@@ -36,6 +36,18 @@ impl<'de> serde::Deserialize<'de> for ForwardInboxThreadEmailOptionsTo {
     }
 }
 
+impl ::std::convert::From<String> for ForwardInboxThreadEmailOptionsTo {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Vec<String>> for ForwardInboxThreadEmailOptionsTo {
+    fn from(value: Vec<String>) -> Self {
+        Self::StringArray(value)
+    }
+}
+
 #[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum ForwardInboxThreadEmailOptionsCc {
@@ -69,6 +81,18 @@ impl<'de> serde::Deserialize<'de> for ForwardInboxThreadEmailOptionsCc {
     }
 }
 
+impl ::std::convert::From<String> for ForwardInboxThreadEmailOptionsCc {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Vec<String>> for ForwardInboxThreadEmailOptionsCc {
+    fn from(value: Vec<String>) -> Self {
+        Self::StringArray(value)
+    }
+}
+
 #[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum ForwardInboxThreadEmailOptionsBcc {
@@ -99,6 +123,18 @@ impl<'de> serde::Deserialize<'de> for ForwardInboxThreadEmailOptionsBcc {
                 "no ForwardInboxThreadEmailOptionsBcc branch accepts this payload",
             )
         })
+    }
+}
+
+impl ::std::convert::From<String> for ForwardInboxThreadEmailOptionsBcc {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Vec<String>> for ForwardInboxThreadEmailOptionsBcc {
+    fn from(value: Vec<String>) -> Self {
+        Self::StringArray(value)
     }
 }
 

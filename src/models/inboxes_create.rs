@@ -34,6 +34,18 @@ impl<'de> serde::Deserialize<'de> for CreateInboxDraftOptionsTo {
     }
 }
 
+impl ::std::convert::From<String> for CreateInboxDraftOptionsTo {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Vec<String>> for CreateInboxDraftOptionsTo {
+    fn from(value: Vec<String>) -> Self {
+        Self::StringArray(value)
+    }
+}
+
 #[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum CreateInboxDraftOptionsCc {
@@ -65,6 +77,18 @@ impl<'de> serde::Deserialize<'de> for CreateInboxDraftOptionsCc {
     }
 }
 
+impl ::std::convert::From<String> for CreateInboxDraftOptionsCc {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Vec<String>> for CreateInboxDraftOptionsCc {
+    fn from(value: Vec<String>) -> Self {
+        Self::StringArray(value)
+    }
+}
+
 #[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum CreateInboxDraftOptionsBcc {
@@ -93,6 +117,18 @@ impl<'de> serde::Deserialize<'de> for CreateInboxDraftOptionsBcc {
         lossy.ok_or_else(|| {
             serde::de::Error::custom("no CreateInboxDraftOptionsBcc branch accepts this payload")
         })
+    }
+}
+
+impl ::std::convert::From<String> for CreateInboxDraftOptionsBcc {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Vec<String>> for CreateInboxDraftOptionsBcc {
+    fn from(value: Vec<String>) -> Self {
+        Self::StringArray(value)
     }
 }
 
