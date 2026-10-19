@@ -14,7 +14,7 @@ cargo add octridev_resend --git https://github.com/OctriDev/resend-rust-showcase
 
 ## Quickstart
 
-The example calls `client.domains.get` (GET `/domains/{domain_id}`) with example values for its required arguments.
+The example calls `client.emails.send` (POST `/emails`) with example values for its required arguments.
 
 ```rust
 use octridev_resend::{ClientConfig, ClientAuthConfig, Resend};
@@ -27,7 +27,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         ..Default::default()
     };
     let client = Resend::new(config);
-    let result = client.domains.get("domain-1".to_string(), None)?;
+    let result = client.emails.send(octridev_resend::methods::emails::EmailsSendParams { from: "user@example.com".to_string(), to: "user@example.com".to_string().into(), subject: "subject".to_string(), idempotency_key: None, bcc: None, cc: None, reply_to: None, html: None, text: None, template: None, headers: None, scheduled_at: None, attachments: None, tags: None, topic_id: None }, None)?;
     println!("{result:#?}");
     Ok(())
 }

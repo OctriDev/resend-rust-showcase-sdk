@@ -3,6 +3,51 @@
 
 // inboxes_update domain models (part 2)
 
+/// Typed representation of the `UpdateInboxResponseSuccess` API schema.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct UpdateInboxResponseSuccess {
+    /// The object type.
+    pub object: String,
+    /// The ID of the inbox.
+    pub id: String,
+}
+
+impl UpdateInboxResponseSuccess {
+    pub(super) fn validate_constraints(&self) -> Result<(), crate::errors::SdkError> {
+        crate::validation::validate_uuid("id", &self.id)?;
+        Ok(())
+    }
+
+    pub fn new(object: String, id: String) -> Result<Self, crate::errors::SdkError> {
+        let value = Self { object, id };
+        value.validate_constraints()?;
+        Ok(value)
+    }
+}
+
+/// Moves the thread to this folder. `sent` is assigned automatically and cannot be set.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub enum UpdateInboxThreadOptionsFolderEnum {
+    #[default]
+    Inbox,
+    Archive,
+    Spam,
+    Trash,
+    Unknown(String),
+}
+
+impl UpdateInboxThreadOptionsFolderEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Inbox => "inbox",
+            Self::Archive => "archive",
+            Self::Spam => "spam",
+            Self::Trash => "trash",
+            Self::Unknown(value) => value.as_str(),
+        }
+    }
+}
+
 impl serde::Serialize for UpdateInboxThreadOptionsFolderEnum {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where

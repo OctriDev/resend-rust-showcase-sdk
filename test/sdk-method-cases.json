@@ -648,7 +648,7 @@
       "owner": null,
       "arguments": {
         "segment_id": "segment-1",
-        "from": "from",
+        "from": "user@example.com",
         "subject": "subject",
         "name": "Example Name",
         "audience_id": "audience-1",
@@ -929,7 +929,7 @@
         "name": "Example Name",
         "audience_id": "audience-1",
         "segment_id": "segment-1",
-        "from": "from",
+        "from": "user@example.com",
         "subject": "subject",
         "reply_to": [
           "reply_to"
@@ -2316,7 +2316,7 @@
       "mode": "normal",
       "owner": null,
       "arguments": {
-        "from": "from",
+        "from": "user@example.com",
         "to": "to",
         "subject": "subject",
         "idempotency_key": "Idempotency-Key",
@@ -2406,7 +2406,7 @@
         "idempotency_key": "Idempotency-Key",
         "body": [
           {
-            "from": "from",
+            "from": "user@example.com",
             "to": "to",
             "subject": "subject",
             "bcc": "bcc",
@@ -4938,7 +4938,7 @@
         "name": "Example Name",
         "html": "html",
         "alias": "alias",
-        "from": "from",
+        "from": "user@example.com",
         "subject": "subject",
         "reply_to": [
           "reply_to"
@@ -5034,7 +5034,7 @@
           "current_version_id": "current_version-1",
           "name": "Example Name",
           "alias": "alias",
-          "from": "from",
+          "from": "user@example.com",
           "subject": "subject",
           "reply_to": [
             "reply_to"
@@ -5172,7 +5172,7 @@
         "id": "id-1",
         "name": "Example Name",
         "alias": "alias",
-        "from": "from",
+        "from": "user@example.com",
         "subject": "subject",
         "reply_to": [
           "reply_to"

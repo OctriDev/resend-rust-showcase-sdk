@@ -264,6 +264,18 @@ impl<'de> serde::Deserialize<'de> for EmailTemplateInputVariablesValue {
     }
 }
 
+impl ::std::convert::From<String> for EmailTemplateInputVariablesValue {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<f64> for EmailTemplateInputVariablesValue {
+    fn from(value: f64) -> Self {
+        Self::Number(value)
+    }
+}
+
 /// Typed representation of the `EmailTemplateInput` API schema.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct EmailTemplateInput {

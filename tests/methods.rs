@@ -497,7 +497,7 @@ fn broadcasts_create_broadcasts_create_reaches_mock_and_decodes_response() {
         &config,
         broadcasts::BroadcastsCreateParams {
             segment_id: decode(fixture(r#""segment-1""#)),
-            from: decode(fixture(r#""from""#)),
+            from: decode(fixture(r#""user@example.com""#)),
             subject: decode(fixture(r#""subject""#)),
             name: Some(decode(fixture(r#""Example Name""#))),
             audience_id: Some(decode(fixture(r#""audience-1""#))),
@@ -657,7 +657,7 @@ fn broadcasts_update_broadcasts_update_reaches_mock_and_decodes_response() {
             name: Some(decode(fixture(r#""Example Name""#))),
             audience_id: Some(decode(fixture(r#""audience-1""#))),
             segment_id: Some(decode(fixture(r#""segment-1""#))),
-            from: Some(decode(fixture(r#""from""#))),
+            from: Some(decode(fixture(r#""user@example.com""#))),
             subject: Some(decode(fixture(r#""subject""#))),
             reply_to: Some(decode(fixture(r#"["reply_to"]"#))),
             preview_text: Some(decode(fixture(r#""preview_text""#))),
@@ -1409,7 +1409,7 @@ fn emails_send_emails_send_reaches_mock_and_decodes_response() {
     let actual = emails::emails_send(
         &config,
         emails::EmailsSendParams {
-            from: decode(fixture(r#""from""#)),
+            from: decode(fixture(r#""user@example.com""#)),
             to: decode(fixture(r#""to""#)),
             subject: decode(fixture(r#""subject""#)),
             idempotency_key: Some(decode(fixture(r#""Idempotency-Key""#))),
@@ -1445,7 +1445,7 @@ fn emails_send_batch_emails_send_batch_reaches_mock_and_decodes_response() {
     let actual = emails::emails_send_batch(
         &config,
         Some(decode(fixture(r#""Idempotency-Key""#))),
-        Some(decode(fixture(r#"[{"from":"from","to":"to","subject":"subject","bcc":"bcc","cc":"cc","reply_to":"reply_to","html":"html","text":"text","template":{"id":"id-1","variables":{"variableName":"Sign up now","variableName2":123}},"headers":{},"scheduled_at":"2024-01-01T00:00:00Z","attachments":[{"content":"ZXhhbXBsZQ==","filename":"Example Name","path":"path","content_type":"content_type","content_id":"content-1"}],"tags":[{"name":"Example Name","value":"value"}],"topic_id":"topic-1"}]"#))),
+        Some(decode(fixture(r#"[{"from":"user@example.com","to":"to","subject":"subject","bcc":"bcc","cc":"cc","reply_to":"reply_to","html":"html","text":"text","template":{"id":"id-1","variables":{"variableName":"Sign up now","variableName2":123}},"headers":{},"scheduled_at":"2024-01-01T00:00:00Z","attachments":[{"content":"ZXhhbXBsZQ==","filename":"Example Name","path":"path","content_type":"content_type","content_id":"content-1"}],"tags":[{"name":"Example Name","value":"value"}],"topic_id":"topic-1"}]"#))),
         None,
     )
     .expect("emails_send_batch request failed");
@@ -2820,7 +2820,7 @@ fn templates_create_templates_create_reaches_mock_and_decodes_response() {
             name: decode(fixture(r#""Example Name""#)),
             html: decode(fixture(r#""html""#)),
             alias: Some(decode(fixture(r#""alias""#))),
-            from: Some(decode(fixture(r#""from""#))),
+            from: Some(decode(fixture(r#""user@example.com""#))),
             subject: Some(decode(fixture(r#""subject""#))),
             reply_to: Some(decode(fixture(r#"["reply_to"]"#))),
             text: Some(decode(fixture(r#""text""#))),
@@ -2865,7 +2865,7 @@ fn templates_get_templates_get_reaches_mock_and_decodes_response() {
         .expect("templates_get request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
-        r#"{"object":"template","id":"id-1","current_version_id":"current_version-1","name":"Example Name","alias":"alias","from":"from","subject":"subject","reply_to":["reply_to"],"html":"html","text":"text","variables":[{"id":"id-1","key":"key","type":"string","fallback_value":"fallback_value","created_at":"2023-10-06 23:47:56.678+00","updated_at":"2023-10-06 23:47:56.678+00"}],"created_at":"2023-10-06 23:47:56.678+00","updated_at":"2023-10-06 23:47:56.678+00","status":"draft","published_at":"2023-10-06 23:47:56.678+00","has_unpublished_versions":false}"#,
+        r#"{"object":"template","id":"id-1","current_version_id":"current_version-1","name":"Example Name","alias":"alias","from":"user@example.com","subject":"subject","reply_to":["reply_to"],"html":"html","text":"text","variables":[{"id":"id-1","key":"key","type":"string","fallback_value":"fallback_value","created_at":"2023-10-06 23:47:56.678+00","updated_at":"2023-10-06 23:47:56.678+00"}],"created_at":"2023-10-06 23:47:56.678+00","updated_at":"2023-10-06 23:47:56.678+00","status":"draft","published_at":"2023-10-06 23:47:56.678+00","has_unpublished_versions":false}"#,
     );
     assert!(
         representative(&actual, &expected),
@@ -2941,7 +2941,7 @@ fn templates_update_templates_update_reaches_mock_and_decodes_response() {
             id: decode(fixture(r#""id-1""#)),
             name: Some(decode(fixture(r#""Example Name""#))),
             alias: Some(decode(fixture(r#""alias""#))),
-            from: Some(decode(fixture(r#""from""#))),
+            from: Some(decode(fixture(r#""user@example.com""#))),
             subject: Some(decode(fixture(r#""subject""#))),
             reply_to: Some(decode(fixture(r#"["reply_to"]"#))),
             html: Some(decode(fixture(r#""html""#))),

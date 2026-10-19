@@ -27,6 +27,18 @@ impl<'de> serde::Deserialize<'de> for SendEmailRequestTo {
     }
 }
 
+impl ::std::convert::From<String> for SendEmailRequestTo {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Vec<String>> for SendEmailRequestTo {
+    fn from(value: Vec<String>) -> Self {
+        Self::StringArray(value)
+    }
+}
+
 #[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum SendEmailRequestBcc {
@@ -55,6 +67,18 @@ impl<'de> serde::Deserialize<'de> for SendEmailRequestBcc {
         lossy.ok_or_else(|| {
             serde::de::Error::custom("no SendEmailRequestBcc branch accepts this payload")
         })
+    }
+}
+
+impl ::std::convert::From<String> for SendEmailRequestBcc {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Vec<String>> for SendEmailRequestBcc {
+    fn from(value: Vec<String>) -> Self {
+        Self::StringArray(value)
     }
 }
 
@@ -89,6 +113,18 @@ impl<'de> serde::Deserialize<'de> for SendEmailRequestCc {
     }
 }
 
+impl ::std::convert::From<String> for SendEmailRequestCc {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Vec<String>> for SendEmailRequestCc {
+    fn from(value: Vec<String>) -> Self {
+        Self::StringArray(value)
+    }
+}
+
 #[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum SendEmailRequestReplyTo {
@@ -117,6 +153,18 @@ impl<'de> serde::Deserialize<'de> for SendEmailRequestReplyTo {
         lossy.ok_or_else(|| {
             serde::de::Error::custom("no SendEmailRequestReplyTo branch accepts this payload")
         })
+    }
+}
+
+impl ::std::convert::From<String> for SendEmailRequestReplyTo {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Vec<String>> for SendEmailRequestReplyTo {
+    fn from(value: Vec<String>) -> Self {
+        Self::StringArray(value)
     }
 }
 
