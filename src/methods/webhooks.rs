@@ -12,6 +12,12 @@ use crate::types::{
 };
 use crate::validation::{validate_items, validate_range, validate_uuid, LengthOpts, RangeOpts};
 
+#[derive(Debug, Clone, Default)]
+pub struct WebhooksCreateParams {
+    pub endpoint: String,
+    pub events: Vec<String>,
+}
+
 /// Creates a webhook subscription that delivers selected event types to a specified endpoint. Provide an `endpoint` URL and at least one event type in `events` to configure the subscription.
 ///
 /// # Arguments
@@ -20,10 +26,10 @@ use crate::validation::{validate_items, validate_range, validate_uuid, LengthOpt
 /// * `events` - Array of event types to subscribe to.
 pub fn webhooks_create(
     config: &ClientConfig,
-    endpoint: String,
-    events: Vec<String>,
+    params: WebhooksCreateParams,
     options: Option<&RequestOptions>,
 ) -> Result<CreateWebhookResponse, SdkError> {
+    let WebhooksCreateParams { endpoint, events } = params;
     validate_items(
         "events",
         &events,
@@ -69,6 +75,13 @@ pub fn webhooks_create(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct WebhooksListParams {
+    pub limit: Option<i64>,
+    pub after: Option<String>,
+    pub before: Option<String>,
+}
+
 /// Lists webhooks configured for your account. Use the pagination cursors to retrieve results before or after a webhook in the list; provide no more than one cursor at a time.
 ///
 /// # Arguments
@@ -80,11 +93,14 @@ pub fn webhooks_create(
 ///   Cannot be used with 'after'.
 pub fn webhooks_list(
     config: &ClientConfig,
-    limit: Option<i64>,
-    after: Option<String>,
-    before: Option<String>,
+    params: WebhooksListParams,
     options: Option<&RequestOptions>,
 ) -> Result<ListWebhooksResponse, SdkError> {
+    let WebhooksListParams {
+        limit,
+        after,
+        before,
+    } = params;
     if let Some(ref after_v) = after {
         validate_uuid("after", after_v)?;
     }
@@ -118,6 +134,11 @@ pub fn webhooks_list(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct WebhooksGetParams {
+    pub webhook_id: String,
+}
+
 /// Retrieves a webhook by its identifier. Use this endpoint to inspect the webhook's endpoint URL, subscribed event types, status, creation timestamp, and signing secret.
 ///
 /// # Arguments
@@ -125,9 +146,10 @@ pub fn webhooks_list(
 /// * `webhook_id` - The Webhook ID.
 pub fn webhooks_get(
     config: &ClientConfig,
-    webhook_id: String,
+    params: WebhooksGetParams,
     options: Option<&RequestOptions>,
 ) -> Result<GetWebhookResponse, SdkError> {
+    let WebhooksGetParams { webhook_id } = params;
     validate_uuid("webhook_id", &webhook_id)?;
 
     Ok(sdk_request::<GetWebhookResponse>(
@@ -147,6 +169,14 @@ pub fn webhooks_get(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct WebhooksUpdateParams {
+    pub webhook_id: String,
+    pub endpoint: Option<String>,
+    pub events: Option<Vec<String>>,
+    pub status: Option<UpdateWebhookRequestStatusEnum>,
+}
+
 /// Updates the endpoint URL, subscribed event types, or status of a webhook. Supply only the fields you want to change; `status` must be enabled or disabled, and `events` must contain at least one event type.
 ///
 /// # Arguments
@@ -157,12 +187,15 @@ pub fn webhooks_get(
 /// * `status` - The status of the webhook.
 pub fn webhooks_update(
     config: &ClientConfig,
-    webhook_id: String,
-    endpoint: Option<String>,
-    events: Option<Vec<String>>,
-    status: Option<UpdateWebhookRequestStatusEnum>,
+    params: WebhooksUpdateParams,
     options: Option<&RequestOptions>,
 ) -> Result<UpdateWebhookResponse, SdkError> {
+    let WebhooksUpdateParams {
+        webhook_id,
+        endpoint,
+        events,
+        status,
+    } = params;
     validate_uuid("webhook_id", &webhook_id)?;
     if let Some(ref events_v) = events {
         validate_items(
@@ -229,6 +262,11 @@ pub fn webhooks_update(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct WebhooksRemoveParams {
+    pub webhook_id: String,
+}
+
 /// Deletes a webhook. Use this endpoint when you no longer want the webhook to receive event deliveries; the response indicates whether deletion succeeded.
 ///
 /// # Arguments
@@ -236,9 +274,10 @@ pub fn webhooks_update(
 /// * `webhook_id` - The Webhook ID.
 pub fn webhooks_remove(
     config: &ClientConfig,
-    webhook_id: String,
+    params: WebhooksRemoveParams,
     options: Option<&RequestOptions>,
 ) -> Result<DeleteWebhookResponse, SdkError> {
+    let WebhooksRemoveParams { webhook_id } = params;
     validate_uuid("webhook_id", &webhook_id)?;
 
     Ok(sdk_request::<DeleteWebhookResponse>(
@@ -258,6 +297,11 @@ pub fn webhooks_remove(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct WebhooksRotateSigningSecretParams {
+    pub webhook_id: String,
+}
+
 /// Rotates the signing secret for a webhook and returns the new secret. Payloads delivered after rotation use the new secret, while the previous secret remains valid for verifying payloads for 24 hours.
 ///
 /// Generates a new signing secret for the webhook and returns it. Payloads delivered after the rotation are signed with the new secret. The previous secret keeps verifying payloads for 24 hours, so both secrets are accepted during that window. A webhook that does not exist or was removed returns a 404 not_found.
@@ -267,9 +311,10 @@ pub fn webhooks_remove(
 /// * `webhook_id` - The Webhook ID.
 pub fn webhooks_rotate_signing_secret(
     config: &ClientConfig,
-    webhook_id: String,
+    params: WebhooksRotateSigningSecretParams,
     options: Option<&RequestOptions>,
 ) -> Result<RotateWebhookSigningSecretResponse, SdkError> {
+    let WebhooksRotateSigningSecretParams { webhook_id } = params;
     validate_uuid("webhook_id", &webhook_id)?;
 
     Ok(sdk_request::<RotateWebhookSigningSecretResponse>(
@@ -289,6 +334,13 @@ pub fn webhooks_rotate_signing_secret(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct WebhooksListEventsParams {
+    pub webhook_id: String,
+    pub limit: Option<i64>,
+    pub after: Option<String>,
+}
+
 /// Lists events associated with a webhook. Use `after` to continue from a cursor and `limit` to control the number of results; the response indicates whether more results are available.
 ///
 /// # Arguments
@@ -298,11 +350,14 @@ pub fn webhooks_rotate_signing_secret(
 /// * `after` - Return items after this cursor.
 pub fn webhooks_list_events(
     config: &ClientConfig,
-    webhook_id: String,
-    limit: Option<i64>,
-    after: Option<String>,
+    params: WebhooksListEventsParams,
     options: Option<&RequestOptions>,
 ) -> Result<ListWebhookEventsResponse, SdkError> {
+    let WebhooksListEventsParams {
+        webhook_id,
+        limit,
+        after,
+    } = params;
     validate_uuid("webhook_id", &webhook_id)?;
     if let Some(ref limit_v) = limit {
         validate_range(
@@ -342,6 +397,12 @@ pub fn webhooks_list_events(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct WebhooksGetEventParams {
+    pub webhook_id: String,
+    pub event_id: String,
+}
+
 /// Retrieves a specific event associated with a webhook. Use the event details to inspect its delivery status, payload, and any scheduled next delivery attempt.
 ///
 /// # Arguments
@@ -350,10 +411,13 @@ pub fn webhooks_list_events(
 /// * `event_id` - The Webhook Event ID.
 pub fn webhooks_get_event(
     config: &ClientConfig,
-    webhook_id: String,
-    event_id: String,
+    params: WebhooksGetEventParams,
     options: Option<&RequestOptions>,
 ) -> Result<GetWebhookEventResponse, SdkError> {
+    let WebhooksGetEventParams {
+        webhook_id,
+        event_id,
+    } = params;
     validate_uuid("webhook_id", &webhook_id)?;
 
     Ok(sdk_request::<GetWebhookEventResponse>(
@@ -374,6 +438,12 @@ pub fn webhooks_get_event(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct WebhooksReplayEventParams {
+    pub webhook_id: String,
+    pub event_id: String,
+}
+
 /// Triggers one additional delivery of a webhook event. The webhook must be enabled, and a manual replay does not schedule automatic retries.
 ///
 /// Queues one more delivery of the event to the webhook. The event must be retrievable through the get event endpoint and the webhook must be enabled; a disabled webhook returns a 422 validation_error. A manual replay does not schedule automatic retries.
@@ -384,10 +454,13 @@ pub fn webhooks_get_event(
 /// * `event_id` - The Webhook Event ID.
 pub fn webhooks_replay_event(
     config: &ClientConfig,
-    webhook_id: String,
-    event_id: String,
+    params: WebhooksReplayEventParams,
     options: Option<&RequestOptions>,
 ) -> Result<ReplayWebhookEventResponse, SdkError> {
+    let WebhooksReplayEventParams {
+        webhook_id,
+        event_id,
+    } = params;
     validate_uuid("webhook_id", &webhook_id)?;
 
     Ok(sdk_request::<ReplayWebhookEventResponse>(
@@ -408,6 +481,14 @@ pub fn webhooks_replay_event(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct WebhooksListEventAttemptsParams {
+    pub webhook_id: String,
+    pub event_id: String,
+    pub limit: Option<i64>,
+    pub after: Option<String>,
+}
+
 /// Lists delivery attempts for a specific event associated with a webhook. Use `after` to continue from a cursor and `limit` to control the number of attempts returned.
 ///
 /// # Arguments
@@ -418,12 +499,15 @@ pub fn webhooks_replay_event(
 /// * `after` - Return items after this cursor.
 pub fn webhooks_list_event_attempts(
     config: &ClientConfig,
-    webhook_id: String,
-    event_id: String,
-    limit: Option<i64>,
-    after: Option<String>,
+    params: WebhooksListEventAttemptsParams,
     options: Option<&RequestOptions>,
 ) -> Result<ListWebhookEventAttemptsResponse, SdkError> {
+    let WebhooksListEventAttemptsParams {
+        webhook_id,
+        event_id,
+        limit,
+        after,
+    } = params;
     validate_uuid("webhook_id", &webhook_id)?;
     if let Some(ref limit_v) = limit {
         validate_range(

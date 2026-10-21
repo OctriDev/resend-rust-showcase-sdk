@@ -154,6 +154,13 @@ pub fn templates_create(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct TemplatesListParams {
+    pub limit: Option<i64>,
+    pub after: Option<String>,
+    pub before: Option<String>,
+}
+
 /// Lists templates available to the authenticated user. Use `after` or `before` to navigate the results with a cursor, and `limit` to control the number of templates returned.
 ///
 /// # Arguments
@@ -163,11 +170,14 @@ pub fn templates_create(
 /// * `before` - Return items before this cursor.
 pub fn templates_list(
     config: &ClientConfig,
-    limit: Option<i64>,
-    after: Option<String>,
-    before: Option<String>,
+    params: TemplatesListParams,
     options: Option<&RequestOptions>,
 ) -> Result<ListTemplatesResponseSuccess, SdkError> {
+    let TemplatesListParams {
+        limit,
+        after,
+        before,
+    } = params;
     if let Some(ref limit_v) = limit {
         validate_range(
             "limit",
@@ -206,6 +216,11 @@ pub fn templates_list(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct TemplatesGetParams {
+    pub id: String,
+}
+
 /// Retrieves a template by its ID or alias. Use the returned details to inspect the template content, variables, and publication status.
 ///
 /// # Arguments
@@ -213,9 +228,10 @@ pub fn templates_list(
 /// * `id` - The Template ID or alias.
 pub fn templates_get(
     config: &ClientConfig,
-    id: String,
+    params: TemplatesGetParams,
     options: Option<&RequestOptions>,
 ) -> Result<Template, SdkError> {
+    let TemplatesGetParams { id } = params;
     Ok(sdk_request::<Template>(
         "GET",
         &format!("/templates/{}", crate::client::encode_path_segment(&id)),
@@ -380,6 +396,11 @@ pub fn templates_update(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct TemplatesRemoveParams {
+    pub id: String,
+}
+
 /// Deletes a template selected by its ID or alias. Use this operation when you want to remove the template; the response indicates whether it was deleted.
 ///
 /// # Arguments
@@ -387,9 +408,10 @@ pub fn templates_update(
 /// * `id` - The Template ID or alias.
 pub fn templates_remove(
     config: &ClientConfig,
-    id: String,
+    params: TemplatesRemoveParams,
     options: Option<&RequestOptions>,
 ) -> Result<RemoveTemplateResponseSuccess, SdkError> {
+    let TemplatesRemoveParams { id } = params;
     Ok(sdk_request::<RemoveTemplateResponseSuccess>(
         "DELETE",
         &format!("/templates/{}", crate::client::encode_path_segment(&id)),
@@ -404,6 +426,11 @@ pub fn templates_remove(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct TemplatesPublishParams {
+    pub id: String,
+}
+
 /// Publishes a template selected by its ID or alias. Use this operation to make the template's current version published.
 ///
 /// # Arguments
@@ -411,9 +438,10 @@ pub fn templates_remove(
 /// * `id` - The Template ID or alias.
 pub fn templates_publish(
     config: &ClientConfig,
-    id: String,
+    params: TemplatesPublishParams,
     options: Option<&RequestOptions>,
 ) -> Result<PublishTemplateResponseSuccess, SdkError> {
+    let TemplatesPublishParams { id } = params;
     Ok(sdk_request::<PublishTemplateResponseSuccess>(
         "POST",
         &format!(
@@ -431,6 +459,11 @@ pub fn templates_publish(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct TemplatesDuplicateParams {
+    pub id: String,
+}
+
 /// Creates a duplicate of a template selected by its ID or alias. Use this operation when you want a separate template based on an existing one.
 ///
 /// # Arguments
@@ -438,9 +471,10 @@ pub fn templates_publish(
 /// * `id` - The Template ID or alias.
 pub fn templates_duplicate(
     config: &ClientConfig,
-    id: String,
+    params: TemplatesDuplicateParams,
     options: Option<&RequestOptions>,
 ) -> Result<DuplicateTemplateResponseSuccess, SdkError> {
+    let TemplatesDuplicateParams { id } = params;
     Ok(sdk_request::<DuplicateTemplateResponseSuccess>(
         "POST",
         &format!(

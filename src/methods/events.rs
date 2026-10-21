@@ -10,6 +10,12 @@ use crate::types::{
 };
 use crate::validation::{validate_email, validate_range, validate_uuid, RangeOpts};
 
+#[derive(Debug, Clone, Default)]
+pub struct EventsCreateParams {
+    pub name: String,
+    pub schema: Option<Option<serde_json::Value>>,
+}
+
 /// Creates a new event with a name and an optional payload schema. The `name` cannot start with the reserved `resend:` prefix, and schema fields support the types `string`, `number`, `boolean`, and `date`.
 ///
 /// # Arguments
@@ -20,10 +26,10 @@ use crate::validation::{validate_email, validate_range, validate_uuid, RangeOpts
 ///   schema. Supported types are `string`, `number`, `boolean`, and `date`.
 pub fn events_create(
     config: &ClientConfig,
-    name: String,
-    schema: Option<Option<serde_json::Value>>,
+    params: EventsCreateParams,
     options: Option<&RequestOptions>,
 ) -> Result<CreateEventResponse, SdkError> {
+    let EventsCreateParams { name, schema } = params;
     let mut __body_map = serde_json::Map::new();
     __body_map.insert(
         "name".to_string(),
@@ -62,6 +68,13 @@ pub fn events_create(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct EventsListParams {
+    pub limit: Option<i64>,
+    pub after: Option<String>,
+    pub before: Option<String>,
+}
+
 /// Lists events available to your account. Use `after` or `before` to navigate results, and `limit` to control the number of items returned per request.
 ///
 /// # Arguments
@@ -71,11 +84,14 @@ pub fn events_create(
 /// * `before` - Return items before this cursor.
 pub fn events_list(
     config: &ClientConfig,
-    limit: Option<i64>,
-    after: Option<String>,
-    before: Option<String>,
+    params: EventsListParams,
     options: Option<&RequestOptions>,
 ) -> Result<ListEventsResponse, SdkError> {
+    let EventsListParams {
+        limit,
+        after,
+        before,
+    } = params;
     if let Some(ref limit_v) = limit {
         validate_range(
             "limit",
@@ -114,6 +130,14 @@ pub fn events_list(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct EventsSendParams {
+    pub event: String,
+    pub contact_id: Option<String>,
+    pub email: Option<String>,
+    pub payload: Option<std::collections::HashMap<String, serde_json::Value>>,
+}
+
 /// Sends an event and associates it with a contact or an email address. Supply the required `event` name and exactly one of `contact_id` or `email`; include `payload` to attach additional key/value data.
 ///
 /// # Arguments
@@ -127,12 +151,15 @@ pub fn events_list(
 ///   event.
 pub fn events_send(
     config: &ClientConfig,
-    event: String,
-    contact_id: Option<String>,
-    email: Option<String>,
-    payload: Option<std::collections::HashMap<String, serde_json::Value>>,
+    params: EventsSendParams,
     options: Option<&RequestOptions>,
 ) -> Result<SendEventResponse, SdkError> {
+    let EventsSendParams {
+        event,
+        contact_id,
+        email,
+        payload,
+    } = params;
     if let Some(ref contact_id_v) = contact_id {
         validate_uuid("contact_id", contact_id_v)?;
     }
@@ -200,6 +227,11 @@ pub fn events_send(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct EventsGetParams {
+    pub identifier: String,
+}
+
 /// Retrieves an event by its UUID or event name. Use the `identifier` path parameter to select the event whose name, payload schema, and timestamps you need.
 ///
 /// # Arguments
@@ -207,9 +239,10 @@ pub fn events_send(
 /// * `identifier` - The event ID (UUID) or event name.
 pub fn events_get(
     config: &ClientConfig,
-    identifier: String,
+    params: EventsGetParams,
     options: Option<&RequestOptions>,
 ) -> Result<Event, SdkError> {
+    let EventsGetParams { identifier } = params;
     Ok(sdk_request::<Event>(
         "GET",
         &format!(
@@ -227,6 +260,12 @@ pub fn events_get(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct EventsUpdateParams {
+    pub identifier: String,
+    pub schema: Option<serde_json::Value>,
+}
+
 /// Updates the payload schema for an existing event. Supply `schema` as a flat key/type map using `string`, `number`, `boolean`, or `date`, or set it to `null` to clear the schema.
 ///
 /// # Arguments
@@ -237,10 +276,10 @@ pub fn events_get(
 ///   `boolean`, and `date`.
 pub fn events_update(
     config: &ClientConfig,
-    identifier: String,
-    schema: Option<serde_json::Value>,
+    params: EventsUpdateParams,
     options: Option<&RequestOptions>,
 ) -> Result<UpdateEventResponse, SdkError> {
+    let EventsUpdateParams { identifier, schema } = params;
     let mut __body_map = serde_json::Map::new();
     __body_map.insert(
         "schema".to_string(),
@@ -271,6 +310,11 @@ pub fn events_update(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct EventsRemoveParams {
+    pub identifier: String,
+}
+
 /// Deletes an event identified by its UUID or name. Use the `identifier` path parameter to specify which event to remove; the response indicates whether the event was deleted.
 ///
 /// # Arguments
@@ -278,9 +322,10 @@ pub fn events_update(
 /// * `identifier` - The event ID (UUID) or event name.
 pub fn events_remove(
     config: &ClientConfig,
-    identifier: String,
+    params: EventsRemoveParams,
     options: Option<&RequestOptions>,
 ) -> Result<RemoveEventResponse, SdkError> {
+    let EventsRemoveParams { identifier } = params;
     Ok(sdk_request::<RemoveEventResponse>(
         "DELETE",
         &format!(

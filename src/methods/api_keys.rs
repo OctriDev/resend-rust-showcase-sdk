@@ -10,6 +10,13 @@ use crate::types::{
 };
 use crate::validation::{validate_range, RangeOpts};
 
+#[derive(Debug, Clone, Default)]
+pub struct ApiKeysCreateParams {
+    pub name: String,
+    pub permission: Option<CreateApiKeyRequestPermissionEnum>,
+    pub domain_id: Option<String>,
+}
+
 /// Creates a new API key. Supply a `name` and choose whether the key has full access or is restricted to sending emails; a sending-only key can be limited to a specific domain. The response includes the key token, so store it securely when you create the key.
 ///
 /// # Arguments
@@ -22,11 +29,14 @@ use crate::validation::{validate_range, RangeOpts};
 ///   domain. Only used when the permission is sending_access.
 pub fn api_keys_create(
     config: &ClientConfig,
-    name: String,
-    permission: Option<CreateApiKeyRequestPermissionEnum>,
-    domain_id: Option<String>,
+    params: ApiKeysCreateParams,
     options: Option<&RequestOptions>,
 ) -> Result<CreateApiKeyResponse, SdkError> {
+    let ApiKeysCreateParams {
+        name,
+        permission,
+        domain_id,
+    } = params;
     let mut __body_map = serde_json::Map::new();
     __body_map.insert(
         "name".to_string(),
@@ -76,6 +86,13 @@ pub fn api_keys_create(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct ApiKeysListParams {
+    pub limit: Option<i64>,
+    pub after: Option<String>,
+    pub before: Option<String>,
+}
+
 /// Lists API keys available to the authenticated user. Use `after` or `before` to navigate the results with a cursor, and `limit` to control the number of items returned.
 ///
 /// # Arguments
@@ -85,11 +102,14 @@ pub fn api_keys_create(
 /// * `before` - Return items before this cursor.
 pub fn api_keys_list(
     config: &ClientConfig,
-    limit: Option<i64>,
-    after: Option<String>,
-    before: Option<String>,
+    params: ApiKeysListParams,
     options: Option<&RequestOptions>,
 ) -> Result<ListApiKeysResponse, SdkError> {
+    let ApiKeysListParams {
+        limit,
+        after,
+        before,
+    } = params;
     if let Some(ref limit_v) = limit {
         validate_range(
             "limit",
@@ -128,6 +148,12 @@ pub fn api_keys_list(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct ApiKeysUpdateParams {
+    pub api_key_id: String,
+    pub name: String,
+}
+
 /// Updates the name of an existing API key. Supply the new `name` in the request body and the key's ID in the path. The response identifies the updated API key.
 ///
 /// # Arguments
@@ -136,10 +162,10 @@ pub fn api_keys_list(
 /// * `name` - The API key name.
 pub fn api_keys_update(
     config: &ClientConfig,
-    api_key_id: String,
-    name: String,
+    params: ApiKeysUpdateParams,
     options: Option<&RequestOptions>,
 ) -> Result<UpdateApiKeyResponse, SdkError> {
+    let ApiKeysUpdateParams { api_key_id, name } = params;
     let mut __body_map = serde_json::Map::new();
     __body_map.insert(
         "name".to_string(),
@@ -170,6 +196,11 @@ pub fn api_keys_update(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct ApiKeysRemoveParams {
+    pub api_key_id: String,
+}
+
 /// Deletes an existing API key. Supply the key's ID to identify the API key to remove. The response indicates whether the key was deleted.
 ///
 /// # Arguments
@@ -177,9 +208,10 @@ pub fn api_keys_update(
 /// * `api_key_id` - The API key ID.
 pub fn api_keys_remove(
     config: &ClientConfig,
-    api_key_id: String,
+    params: ApiKeysRemoveParams,
     options: Option<&RequestOptions>,
 ) -> Result<DeleteApiKeyResponse, SdkError> {
+    let ApiKeysRemoveParams { api_key_id } = params;
     Ok(sdk_request::<DeleteApiKeyResponse>(
         "DELETE",
         &format!(

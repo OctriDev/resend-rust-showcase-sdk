@@ -27,86 +27,66 @@ impl EmailsNamespace {
     /// Lists emails with cursor-based pagination. Use `limit` to control the number of results and `after` or `before` to choose a pagination cursor.
     pub fn list(
         &self,
-        limit: Option<i64>,
-        after: Option<String>,
-        before: Option<String>,
+        params: crate::methods::emails::EmailsListParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListEmailsResponse, crate::errors::SdkError> {
-        crate::methods::emails::emails_list(&self.config, limit, after, before, options)
+        crate::methods::emails::emails_list(&self.config, params, options)
     }
     /// Retrieves a single email by its identifier. Use `email_id` to select the email whose message details and latest delivery event you want to inspect.
     pub fn get(
         &self,
-        email_id: String,
+        params: crate::methods::emails::EmailsGetParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Email, crate::errors::SdkError> {
-        crate::methods::emails::emails_get(&self.config, email_id, options)
+        crate::methods::emails::emails_get(&self.config, params, options)
     }
     /// Updates the scheduled send time for a single email. Use `email_id` to identify the email whose schedule you want to change; the response contains its scheduled time.
     pub fn update(
         &self,
-        email_id: String,
+        params: crate::methods::emails::EmailsUpdateParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<UpdateEmailOptions, crate::errors::SdkError> {
-        crate::methods::emails::emails_update(&self.config, email_id, options)
+        crate::methods::emails::emails_update(&self.config, params, options)
     }
     /// Cancels the scheduled send of an email. Use `email_id` to identify the email whose scheduled delivery you want to cancel; the response includes the email's current details and latest event.
     pub fn cancel(
         &self,
-        email_id: String,
+        params: crate::methods::emails::EmailsCancelParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Email, crate::errors::SdkError> {
-        crate::methods::emails::emails_cancel(&self.config, email_id, options)
+        crate::methods::emails::emails_cancel(&self.config, params, options)
     }
     /// Creates a shareable link for a sent or received email. Use `email_id` to select the email and optionally set `expires_in` to a duration of up to 48 hours; the default is 48 hours.
     pub fn share(
         &self,
-        email_id: String,
-        expires_in: Option<String>,
+        params: crate::methods::emails::EmailsShareParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ShareEmailResponse, crate::errors::SdkError> {
-        crate::methods::emails::emails_share(&self.config, email_id, expires_in, options)
+        crate::methods::emails::emails_share(&self.config, params, options)
     }
     /// Submits a batch of email messages for sending, with up to 100 emails in the batch. Each message requires `from`, `to`, and `subject`; the response includes an ID for each submitted email.
     pub fn send_batch(
         &self,
-        idempotency_key: Option<String>,
-        body: Option<Vec<SendEmailRequest>>,
+        params: crate::methods::emails::EmailsSendBatchParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<CreateBatchEmailsResponse, crate::errors::SdkError> {
-        crate::methods::emails::emails_send_batch(&self.config, idempotency_key, body, options)
+        crate::methods::emails::emails_send_batch(&self.config, params, options)
     }
     /// Lists the attachments for a sent email. Use `email_id` to select the email and `after` or `before` to paginate through its attachments; these cursor parameters cannot be used together.
     pub fn list_attachments(
         &self,
-        email_id: String,
-        limit: Option<i64>,
-        after: Option<String>,
-        before: Option<String>,
+        params: crate::methods::emails::EmailsListAttachmentsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListAttachmentsResponse, crate::errors::SdkError> {
-        crate::methods::emails::emails_list_attachments(
-            &self.config,
-            email_id,
-            limit,
-            after,
-            before,
-            options,
-        )
+        crate::methods::emails::emails_list_attachments(&self.config, params, options)
     }
     /// Retrieves a single attachment for a sent email. Use `email_id` and `attachment_id` to identify the email and attachment; the response includes a signed download URL and its expiration time.
     pub fn get_attachment(
         &self,
-        email_id: String,
-        attachment_id: String,
+        params: crate::methods::emails::EmailsGetAttachmentParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<RetrievedAttachment, crate::errors::SdkError> {
-        crate::methods::emails::emails_get_attachment(
-            &self.config,
-            email_id,
-            attachment_id,
-            options,
-        )
+        crate::methods::emails::emails_get_attachment(&self.config, params, options)
     }
     /// Retrieves account-level email metrics for a date range, optionally broken down by dimensions. Use `metrics` and `dimensions` to choose the returned measures and breakdowns, and use the ID filters to restrict the data.
     pub fn get_metrics(
@@ -133,52 +113,34 @@ impl ReceivingEmailsNamespace {
     /// Lists received emails with cursor-based pagination. Use `limit` to control the number of results and `after` or `before` to select a pagination cursor; the cursor parameters cannot be used together.
     pub fn list(
         &self,
-        limit: Option<i64>,
-        after: Option<String>,
-        before: Option<String>,
+        params: crate::methods::receiving_emails::ListParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListReceivedEmailsResponse, crate::errors::SdkError> {
-        crate::methods::receiving_emails::list(&self.config, limit, after, before, options)
+        crate::methods::receiving_emails::list(&self.config, params, options)
     }
     /// Retrieves a received email by its identifier. Use `email_id` to select the email; the response includes its message content, headers, recipients, receipt time, and attachments.
     pub fn get(
         &self,
-        email_id: String,
+        params: crate::methods::receiving_emails::GetParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<GetReceivedEmailResponse, crate::errors::SdkError> {
-        crate::methods::receiving_emails::get(&self.config, email_id, options)
+        crate::methods::receiving_emails::get(&self.config, params, options)
     }
     /// Lists attachments for a received email. Use `email_id` to select the email and `after` or `before` to navigate through attachment results.
     pub fn list_attachments(
         &self,
-        email_id: String,
-        limit: Option<i64>,
-        after: Option<String>,
-        before: Option<String>,
+        params: crate::methods::receiving_emails::ListAttachmentsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListAttachmentsResponse, crate::errors::SdkError> {
-        crate::methods::receiving_emails::list_attachments(
-            &self.config,
-            email_id,
-            limit,
-            after,
-            before,
-            options,
-        )
+        crate::methods::receiving_emails::list_attachments(&self.config, params, options)
     }
     /// Retrieves an attachment belonging to a received email. Use `email_id` to identify the email and `attachment_id` to select its attachment; the response includes a signed download URL and its expiration time.
     pub fn get_attachment(
         &self,
-        email_id: String,
-        attachment_id: String,
+        params: crate::methods::receiving_emails::GetAttachmentParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<RetrievedAttachment, crate::errors::SdkError> {
-        crate::methods::receiving_emails::get_attachment(
-            &self.config,
-            email_id,
-            attachment_id,
-            options,
-        )
+        crate::methods::receiving_emails::get_attachment(&self.config, params, options)
     }
 }
 
@@ -205,20 +167,18 @@ impl DomainsNamespace {
     /// Lists domains in the account. Use `limit` to control the number of results and `after` or `before` to navigate the cursor-based list.
     pub fn list(
         &self,
-        limit: Option<i64>,
-        after: Option<String>,
-        before: Option<String>,
+        params: crate::methods::domains::DomainsListParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListDomainsResponse, crate::errors::SdkError> {
-        crate::methods::domains::domains_list(&self.config, limit, after, before, options)
+        crate::methods::domains::domains_list(&self.config, params, options)
     }
     /// Retrieves a domain by its identifier. Use `domain_id` to select the domain and view its status, configuration, capabilities, and DNS records.
     pub fn get(
         &self,
-        domain_id: String,
+        params: crate::methods::domains::DomainsGetParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Domain, crate::errors::SdkError> {
-        crate::methods::domains::domains_get(&self.config, domain_id, options)
+        crate::methods::domains::domains_get(&self.config, params, options)
     }
     /// Updates the configuration of an existing domain. Supply only the settings you want to change, such as tracking options, TLS mode, capabilities, or the tracking subdomain.
     pub fn update(
@@ -231,20 +191,20 @@ impl DomainsNamespace {
     /// Deletes an existing domain. Use `domain_id` to select the domain to remove; the response indicates whether deletion succeeded.
     pub fn remove(
         &self,
-        domain_id: String,
+        params: crate::methods::domains::DomainsRemoveParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<DeleteDomainResponse, crate::errors::SdkError> {
-        crate::methods::domains::domains_remove(&self.config, domain_id, options)
+        crate::methods::domains::domains_remove(&self.config, params, options)
     }
     /// Triggers verification of a domain's DNS records, including DKIM, SPF, and the tracking CNAME when a tracking subdomain is configured. Use this operation after adding the required DNS records to check the domain's verification status.
     ///
     /// Triggers verification of the domain's DNS records including DKIM, SPF, and the tracking CNAME (if a tracking subdomain is configured).
     pub fn verify(
         &self,
-        domain_id: String,
+        params: crate::methods::domains::DomainsVerifyParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<VerifyDomainResponse, crate::errors::SdkError> {
-        crate::methods::domains::domains_verify(&self.config, domain_id, options)
+        crate::methods::domains::domains_verify(&self.config, params, options)
     }
     /// Start a claim for a domain that another Resend account has already verified. The domain is recreated under your account with fresh DKIM keys, so the previous account's DNS records cannot be reused. Returns a TXT record to add to your DNS to prove ownership. Uses the same request body as creating a domain.
     pub fn create_claim(
@@ -259,20 +219,20 @@ impl DomainsNamespace {
     /// Retrieve the latest claim for the placeholder domain created by the claim.
     pub fn get_claim(
         &self,
-        domain_id: String,
+        params: crate::methods::domains::DomainsGetClaimParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<DomainClaim, crate::errors::SdkError> {
-        crate::methods::domains::domains_get_claim(&self.config, domain_id, options)
+        crate::methods::domains::domains_get_claim(&self.config, params, options)
     }
     /// Triggers asynchronous DNS verification and ownership transfer for a domain claim. The claim remains `pending` while verification runs, so retrieve the claim to check its status. Once the claim is `completed`, add the transferred domain's new DKIM records to DNS and verify them with the standard domain verification endpoint.
     ///
     /// Trigger asynchronous DNS verification and ownership transfer for a domain claim. The claim stays `pending` while verification runs; poll the retrieve endpoint for status. Once `completed`, the transferred domain has new DKIM records that must be added to DNS and verified via the standard domain verify endpoint.
     pub fn verify_claim(
         &self,
-        domain_id: String,
+        params: crate::methods::domains::DomainsVerifyClaimParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<DomainClaim, crate::errors::SdkError> {
-        crate::methods::domains::domains_verify_claim(&self.config, domain_id, options)
+        crate::methods::domains::domains_verify_claim(&self.config, params, options)
     }
 }
 
@@ -291,45 +251,34 @@ impl ApiKeysNamespace {
     /// Creates a new API key. Supply a `name` and choose whether the key has full access or is restricted to sending emails; a sending-only key can be limited to a specific domain. The response includes the key token, so store it securely when you create the key.
     pub fn create(
         &self,
-        name: String,
-        permission: Option<CreateApiKeyRequestPermissionEnum>,
-        domain_id: Option<String>,
+        params: crate::methods::api_keys::ApiKeysCreateParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<CreateApiKeyResponse, crate::errors::SdkError> {
-        crate::methods::api_keys::api_keys_create(
-            &self.config,
-            name,
-            permission,
-            domain_id,
-            options,
-        )
+        crate::methods::api_keys::api_keys_create(&self.config, params, options)
     }
     /// Lists API keys available to the authenticated user. Use `after` or `before` to navigate the results with a cursor, and `limit` to control the number of items returned.
     pub fn list(
         &self,
-        limit: Option<i64>,
-        after: Option<String>,
-        before: Option<String>,
+        params: crate::methods::api_keys::ApiKeysListParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListApiKeysResponse, crate::errors::SdkError> {
-        crate::methods::api_keys::api_keys_list(&self.config, limit, after, before, options)
+        crate::methods::api_keys::api_keys_list(&self.config, params, options)
     }
     /// Updates the name of an existing API key. Supply the new `name` in the request body and the key's ID in the path. The response identifies the updated API key.
     pub fn update(
         &self,
-        api_key_id: String,
-        name: String,
+        params: crate::methods::api_keys::ApiKeysUpdateParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<UpdateApiKeyResponse, crate::errors::SdkError> {
-        crate::methods::api_keys::api_keys_update(&self.config, api_key_id, name, options)
+        crate::methods::api_keys::api_keys_update(&self.config, params, options)
     }
     /// Deletes an existing API key. Supply the key's ID to identify the API key to remove. The response indicates whether the key was deleted.
     pub fn remove(
         &self,
-        api_key_id: String,
+        params: crate::methods::api_keys::ApiKeysRemoveParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<DeleteApiKeyResponse, crate::errors::SdkError> {
-        crate::methods::api_keys::api_keys_remove(&self.config, api_key_id, options)
+        crate::methods::api_keys::api_keys_remove(&self.config, params, options)
     }
 }
 
@@ -348,20 +297,18 @@ impl OauthNamespace {
     /// Lists OAuth grants available to the authenticated user. Use `after` or `before` to navigate the results with a cursor, and `limit` to control the number of grants returned.
     pub fn list_grants(
         &self,
-        limit: Option<i64>,
-        after: Option<String>,
-        before: Option<String>,
+        params: crate::methods::oauth::ListGrantsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListOAuthGrantsResponse, crate::errors::SdkError> {
-        crate::methods::oauth::list_grants(&self.config, limit, after, before, options)
+        crate::methods::oauth::list_grants(&self.config, params, options)
     }
     /// Revokes an OAuth grant, removing the authorization associated with it. Supply the grant's ID to identify which authorization to revoke. The response includes the revocation time and reason.
     pub fn revoke_grant(
         &self,
-        oauth_grant_id: String,
+        params: crate::methods::oauth::RevokeOauthGrantParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<RevokeOAuthGrantResponse, crate::errors::SdkError> {
-        crate::methods::oauth::revoke_grant(&self.config, oauth_grant_id, options)
+        crate::methods::oauth::revoke_oauth_grant(&self.config, params, options)
     }
 }
 
@@ -388,20 +335,18 @@ impl TemplatesNamespace {
     /// Lists templates available to the authenticated user. Use `after` or `before` to navigate the results with a cursor, and `limit` to control the number of templates returned.
     pub fn list(
         &self,
-        limit: Option<i64>,
-        after: Option<String>,
-        before: Option<String>,
+        params: crate::methods::templates::TemplatesListParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListTemplatesResponseSuccess, crate::errors::SdkError> {
-        crate::methods::templates::templates_list(&self.config, limit, after, before, options)
+        crate::methods::templates::templates_list(&self.config, params, options)
     }
     /// Retrieves a template by its ID or alias. Use the returned details to inspect the template content, variables, and publication status.
     pub fn get(
         &self,
-        id: String,
+        params: crate::methods::templates::TemplatesGetParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Template, crate::errors::SdkError> {
-        crate::methods::templates::templates_get(&self.config, id, options)
+        crate::methods::templates::templates_get(&self.config, params, options)
     }
     /// Updates an existing template with the fields you provide. Use the `id` path parameter to select the template and send only the template properties you want to change.
     pub fn update(
@@ -414,26 +359,26 @@ impl TemplatesNamespace {
     /// Deletes a template selected by its ID or alias. Use this operation when you want to remove the template; the response indicates whether it was deleted.
     pub fn remove(
         &self,
-        id: String,
+        params: crate::methods::templates::TemplatesRemoveParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<RemoveTemplateResponseSuccess, crate::errors::SdkError> {
-        crate::methods::templates::templates_remove(&self.config, id, options)
+        crate::methods::templates::templates_remove(&self.config, params, options)
     }
     /// Publishes a template selected by its ID or alias. Use this operation to make the template's current version published.
     pub fn publish(
         &self,
-        id: String,
+        params: crate::methods::templates::TemplatesPublishParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<PublishTemplateResponseSuccess, crate::errors::SdkError> {
-        crate::methods::templates::templates_publish(&self.config, id, options)
+        crate::methods::templates::templates_publish(&self.config, params, options)
     }
     /// Creates a duplicate of a template selected by its ID or alias. Use this operation when you want a separate template based on an existing one.
     pub fn duplicate(
         &self,
-        id: String,
+        params: crate::methods::templates::TemplatesDuplicateParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<DuplicateTemplateResponseSuccess, crate::errors::SdkError> {
-        crate::methods::templates::templates_duplicate(&self.config, id, options)
+        crate::methods::templates::templates_duplicate(&self.config, params, options)
     }
 }
 
@@ -458,10 +403,10 @@ impl AudiencesNamespace {
     /// This operation is deprecated and may be removed in a future release.
     pub fn create(
         &self,
-        name: String,
+        params: crate::methods::audiences::AudiencesCreateParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<CreateAudienceResponseSuccess, crate::errors::SdkError> {
-        crate::methods::audiences::audiences_create(&self.config, name, options)
+        crate::methods::audiences::audiences_create(&self.config, params, options)
     }
     /// Lists audiences with their identifiers, names, and creation timestamps. Use the Segments endpoints instead, because this audience operation is deprecated. This operation is closing down and will be removed on a date not specified in the API definition.
     ///
@@ -485,10 +430,10 @@ impl AudiencesNamespace {
     /// This operation is deprecated and may be removed in a future release.
     pub fn remove(
         &self,
-        id: String,
+        params: crate::methods::audiences::AudiencesRemoveParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<RemoveAudienceResponseSuccess, crate::errors::SdkError> {
-        crate::methods::audiences::audiences_remove(&self.config, id, options)
+        crate::methods::audiences::audiences_remove(&self.config, params, options)
     }
     /// Retrieves an audience by its ID. Use the Segments endpoints instead, because this audience operation is deprecated. This operation is closing down and will be removed on a date not specified in the API definition.
     ///
@@ -499,10 +444,10 @@ impl AudiencesNamespace {
     /// This operation is deprecated and may be removed in a future release.
     pub fn get(
         &self,
-        id: String,
+        params: crate::methods::audiences::AudiencesGetParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<GetAudienceResponseSuccess, crate::errors::SdkError> {
-        crate::methods::audiences::audiences_get(&self.config, id, options)
+        crate::methods::audiences::audiences_get(&self.config, params, options)
     }
 }
 
@@ -529,12 +474,10 @@ impl ContactsNamespace {
     /// Lists contacts, with each result including contact information. Use `after` or `before` to navigate results by cursor, and `limit` to control the number of items returned.
     pub fn list(
         &self,
-        limit: Option<i64>,
-        after: Option<String>,
-        before: Option<String>,
+        params: crate::methods::contacts::ContactsListParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListContactsResponseSuccess, crate::errors::SdkError> {
-        crate::methods::contacts::contacts_list(&self.config, limit, after, before, options)
+        crate::methods::contacts::contacts_list(&self.config, params, options)
     }
     /// Creates a contact import from a CSV file. Include the file and optionally provide a column mapping, conflict strategy, segments, or topic subscriptions for imported contacts.
     pub fn create_import(
@@ -547,36 +490,26 @@ impl ContactsNamespace {
     /// Lists contact imports and their processing information. Use `status` to filter by import state, and `after` or `before` to navigate results by cursor.
     pub fn list_imports(
         &self,
-        status: Option<crate::methods::contacts::ContactsListImportsEnum>,
-        limit: Option<i64>,
-        after: Option<String>,
-        before: Option<String>,
+        params: crate::methods::contacts::ContactsListImportsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListContactImportsResponseSuccess, crate::errors::SdkError> {
-        crate::methods::contacts::contacts_list_imports(
-            &self.config,
-            status,
-            limit,
-            after,
-            before,
-            options,
-        )
+        crate::methods::contacts::contacts_list_imports(&self.config, params, options)
     }
     /// Retrieves a contact import by its identifier. Use the import record to review its status, timestamps, and processing counts.
     pub fn get_import(
         &self,
-        id: String,
+        params: crate::methods::contacts::ContactsGetImportParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<GetContactImportResponseSuccess, crate::errors::SdkError> {
-        crate::methods::contacts::contacts_get_import(&self.config, id, options)
+        crate::methods::contacts::contacts_get_import(&self.config, params, options)
     }
     /// Retrieves a contact by its ID or email address. Use this operation to inspect the contact's profile, subscription status, and custom properties.
     pub fn get(
         &self,
-        id: String,
+        params: crate::methods::contacts::ContactsGetParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<GetContactResponseSuccess, crate::errors::SdkError> {
-        crate::methods::contacts::contacts_get(&self.config, id, options)
+        crate::methods::contacts::contacts_get(&self.config, params, options)
     }
     /// Updates a contact identified by its ID or email address. Include only the profile, subscription, or custom property fields you want to change.
     pub fn update(
@@ -589,83 +522,50 @@ impl ContactsNamespace {
     /// Deletes a contact identified by its ID or email address. Use this operation to remove the contact from the contacts resource.
     pub fn remove(
         &self,
-        id: String,
+        params: crate::methods::contacts::ContactsRemoveParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<RemoveContactResponseSuccess, crate::errors::SdkError> {
-        crate::methods::contacts::contacts_remove(&self.config, id, options)
+        crate::methods::contacts::contacts_remove(&self.config, params, options)
     }
     /// Lists the segments associated with a contact. Use `contact_id` to select the contact and `after` or `before` to position results relative to a cursor.
     pub fn list_segments(
         &self,
-        contact_id: String,
-        limit: Option<i64>,
-        after: Option<String>,
-        before: Option<String>,
+        params: crate::methods::contacts::ContactsListSegmentsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListContactSegmentsResponseSuccess, crate::errors::SdkError> {
-        crate::methods::contacts::contacts_list_segments(
-            &self.config,
-            contact_id,
-            limit,
-            after,
-            before,
-            options,
-        )
+        crate::methods::contacts::contacts_list_segments(&self.config, params, options)
     }
     /// Adds a contact to a segment. Supply the contact’s ID or email address and the segment ID to select the membership to create.
     pub fn add_segment(
         &self,
-        contact_id: String,
-        segment_id: String,
+        params: crate::methods::contacts::ContactsAddSegmentParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<AddContactToSegmentResponseSuccess, crate::errors::SdkError> {
-        crate::methods::contacts::contacts_add_segment(
-            &self.config,
-            contact_id,
-            segment_id,
-            options,
-        )
+        crate::methods::contacts::contacts_add_segment(&self.config, params, options)
     }
     /// Removes a contact from a segment. Supply the contact’s ID or email address and the segment ID to select the membership to remove.
     pub fn remove_segment(
         &self,
-        contact_id: String,
-        segment_id: String,
+        params: crate::methods::contacts::ContactsRemoveSegmentParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<RemoveContactFromSegmentResponseSuccess, crate::errors::SdkError> {
-        crate::methods::contacts::contacts_remove_segment(
-            &self.config,
-            contact_id,
-            segment_id,
-            options,
-        )
+        crate::methods::contacts::contacts_remove_segment(&self.config, params, options)
     }
     /// Lists the topics and subscription statuses associated with a contact. Use `contact_id` to select the contact and `after` or `before` to position results relative to a cursor.
     pub fn list_topics(
         &self,
-        contact_id: String,
-        limit: Option<i64>,
-        after: Option<String>,
-        before: Option<String>,
+        params: crate::methods::contacts::ContactsListTopicsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<GetContactTopicsResponseSuccess, crate::errors::SdkError> {
-        crate::methods::contacts::contacts_list_topics(
-            &self.config,
-            contact_id,
-            limit,
-            after,
-            before,
-            options,
-        )
+        crate::methods::contacts::contacts_list_topics(&self.config, params, options)
     }
     /// Updates a contact’s subscriptions to topics. Supply the required `topics` array with each topic ID and its subscription status.
     pub fn update_topics(
         &self,
-        contact_id: String,
-        topics: Vec<UpdateContactTopicsOptionsTopicsItem>,
+        params: crate::methods::contacts::ContactsUpdateTopicsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<UpdateContactTopicsResponseSuccess, crate::errors::SdkError> {
-        crate::methods::contacts::contacts_update_topics(&self.config, contact_id, topics, options)
+        crate::methods::contacts::contacts_update_topics(&self.config, params, options)
     }
 }
 
@@ -692,28 +592,26 @@ impl BroadcastsNamespace {
     /// Lists broadcasts and their delivery or scheduling information. Use `after` or `before` to navigate results by cursor, and `limit` to control the number of items returned.
     pub fn list(
         &self,
-        limit: Option<i64>,
-        after: Option<String>,
-        before: Option<String>,
+        params: crate::methods::broadcasts::BroadcastsListParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListBroadcastsResponseSuccess, crate::errors::SdkError> {
-        crate::methods::broadcasts::broadcasts_list(&self.config, limit, after, before, options)
+        crate::methods::broadcasts::broadcasts_list(&self.config, params, options)
     }
     /// Deletes an existing broadcast that is in draft status. Use this operation to remove a draft broadcast that you no longer need.
     pub fn remove(
         &self,
-        id: String,
+        params: crate::methods::broadcasts::BroadcastsRemoveParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<RemoveBroadcastResponseSuccess, crate::errors::SdkError> {
-        crate::methods::broadcasts::broadcasts_remove(&self.config, id, options)
+        crate::methods::broadcasts::broadcasts_remove(&self.config, params, options)
     }
     /// Retrieves a single broadcast by its identifier. Use this endpoint to inspect the broadcast's audience, sender, content, and delivery status.
     pub fn get(
         &self,
-        id: String,
+        params: crate::methods::broadcasts::BroadcastsGetParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<GetBroadcastResponseSuccess, crate::errors::SdkError> {
-        crate::methods::broadcasts::broadcasts_get(&self.config, id, options)
+        crate::methods::broadcasts::broadcasts_get(&self.config, params, options)
     }
     /// Updates the name, audience, sender, content, or topic of an existing broadcast. Supply only the fields you want to change; use `segment_id` instead of the deprecated `audience_id` field.
     pub fn update(
@@ -726,29 +624,28 @@ impl BroadcastsNamespace {
     /// Submits a broadcast for sending or schedules it for later delivery. Provide `scheduled_at` in ISO 8601 format when you want the broadcast sent at a specific time; omit it to send without scheduling.
     pub fn send(
         &self,
-        id: String,
-        scheduled_at: Option<String>,
+        params: crate::methods::broadcasts::BroadcastsSendParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<SendBroadcastResponseSuccess, crate::errors::SdkError> {
-        crate::methods::broadcasts::broadcasts_send(&self.config, id, scheduled_at, options)
+        crate::methods::broadcasts::broadcasts_send(&self.config, params, options)
     }
     /// Cancels a queued or scheduled broadcast. Cancelling a queued broadcast stops further delivery, but does not affect emails that have already been sent.
     ///
     /// Cancels a broadcast that is queued or scheduled. Canceling a queued broadcast stops it mid-send; emails already sent are not affected, but no further emails will go out.
     pub fn cancel(
         &self,
-        id: String,
+        params: crate::methods::broadcasts::BroadcastsCancelParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<CancelBroadcastResponseSuccess, crate::errors::SdkError> {
-        crate::methods::broadcasts::broadcasts_cancel(&self.config, id, options)
+        crate::methods::broadcasts::broadcasts_cancel(&self.config, params, options)
     }
     /// Creates a new draft broadcast with the same segment, topic, sender, subject, reply-to, preview text, and content as the source. The copy is named after the source with " (copy)" appended, truncated to 70 characters.
     pub fn duplicate(
         &self,
-        id: String,
+        params: crate::methods::broadcasts::BroadcastsDuplicateParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<DuplicateBroadcastResponseSuccess, crate::errors::SdkError> {
-        crate::methods::broadcasts::broadcasts_duplicate(&self.config, id, options)
+        crate::methods::broadcasts::broadcasts_duplicate(&self.config, params, options)
     }
     /// Lists recipients of a broadcast filtered by recipient event type, such as opened, clicked, or bounced. Use `type` to select the event and optionally use `email`, `bounce_type`, or cursor parameters to narrow the results.
     ///
@@ -763,20 +660,10 @@ impl BroadcastsNamespace {
     /// Lists the links clicked in a broadcast and their click counts. Use the cursor parameters to retrieve results before or after a position in the list.
     pub fn list_clicked_links(
         &self,
-        id: String,
-        limit: Option<i64>,
-        after: Option<String>,
-        before: Option<String>,
+        params: crate::methods::broadcasts::BroadcastsListClickedLinksParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListBroadcastClickedLinksResponseSuccess, crate::errors::SdkError> {
-        crate::methods::broadcasts::broadcasts_list_clicked_links(
-            &self.config,
-            id,
-            limit,
-            after,
-            before,
-            options,
-        )
+        crate::methods::broadcasts::broadcasts_list_clicked_links(&self.config, params, options)
     }
 }
 
@@ -795,119 +682,86 @@ impl WebhooksNamespace {
     /// Creates a webhook subscription that delivers selected event types to a specified endpoint. Provide an `endpoint` URL and at least one event type in `events` to configure the subscription.
     pub fn create(
         &self,
-        endpoint: String,
-        events: Vec<String>,
+        params: crate::methods::webhooks::WebhooksCreateParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<CreateWebhookResponse, crate::errors::SdkError> {
-        crate::methods::webhooks::webhooks_create(&self.config, endpoint, events, options)
+        crate::methods::webhooks::webhooks_create(&self.config, params, options)
     }
     /// Lists webhooks configured for your account. Use the pagination cursors to retrieve results before or after a webhook in the list; provide no more than one cursor at a time.
     pub fn list(
         &self,
-        limit: Option<i64>,
-        after: Option<String>,
-        before: Option<String>,
+        params: crate::methods::webhooks::WebhooksListParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListWebhooksResponse, crate::errors::SdkError> {
-        crate::methods::webhooks::webhooks_list(&self.config, limit, after, before, options)
+        crate::methods::webhooks::webhooks_list(&self.config, params, options)
     }
     /// Retrieves a webhook by its identifier. Use this endpoint to inspect the webhook's endpoint URL, subscribed event types, status, creation timestamp, and signing secret.
     pub fn get(
         &self,
-        webhook_id: String,
+        params: crate::methods::webhooks::WebhooksGetParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<GetWebhookResponse, crate::errors::SdkError> {
-        crate::methods::webhooks::webhooks_get(&self.config, webhook_id, options)
+        crate::methods::webhooks::webhooks_get(&self.config, params, options)
     }
     /// Updates the endpoint URL, subscribed event types, or status of a webhook. Supply only the fields you want to change; `status` must be enabled or disabled, and `events` must contain at least one event type.
     pub fn update(
         &self,
-        webhook_id: String,
-        endpoint: Option<String>,
-        events: Option<Vec<String>>,
-        status: Option<UpdateWebhookRequestStatusEnum>,
+        params: crate::methods::webhooks::WebhooksUpdateParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<UpdateWebhookResponse, crate::errors::SdkError> {
-        crate::methods::webhooks::webhooks_update(
-            &self.config,
-            webhook_id,
-            endpoint,
-            events,
-            status,
-            options,
-        )
+        crate::methods::webhooks::webhooks_update(&self.config, params, options)
     }
     /// Deletes a webhook. Use this endpoint when you no longer want the webhook to receive event deliveries; the response indicates whether deletion succeeded.
     pub fn remove(
         &self,
-        webhook_id: String,
+        params: crate::methods::webhooks::WebhooksRemoveParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<DeleteWebhookResponse, crate::errors::SdkError> {
-        crate::methods::webhooks::webhooks_remove(&self.config, webhook_id, options)
+        crate::methods::webhooks::webhooks_remove(&self.config, params, options)
     }
     /// Rotates the signing secret for a webhook and returns the new secret. Payloads delivered after rotation use the new secret, while the previous secret remains valid for verifying payloads for 24 hours.
     ///
     /// Generates a new signing secret for the webhook and returns it. Payloads delivered after the rotation are signed with the new secret. The previous secret keeps verifying payloads for 24 hours, so both secrets are accepted during that window. A webhook that does not exist or was removed returns a 404 not_found.
     pub fn rotate_signing_secret(
         &self,
-        webhook_id: String,
+        params: crate::methods::webhooks::WebhooksRotateSigningSecretParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<RotateWebhookSigningSecretResponse, crate::errors::SdkError> {
-        crate::methods::webhooks::webhooks_rotate_signing_secret(&self.config, webhook_id, options)
+        crate::methods::webhooks::webhooks_rotate_signing_secret(&self.config, params, options)
     }
     /// Lists events associated with a webhook. Use `after` to continue from a cursor and `limit` to control the number of results; the response indicates whether more results are available.
     pub fn list_events(
         &self,
-        webhook_id: String,
-        limit: Option<i64>,
-        after: Option<String>,
+        params: crate::methods::webhooks::WebhooksListEventsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListWebhookEventsResponse, crate::errors::SdkError> {
-        crate::methods::webhooks::webhooks_list_events(
-            &self.config,
-            webhook_id,
-            limit,
-            after,
-            options,
-        )
+        crate::methods::webhooks::webhooks_list_events(&self.config, params, options)
     }
     /// Retrieves a specific event associated with a webhook. Use the event details to inspect its delivery status, payload, and any scheduled next delivery attempt.
     pub fn get_event(
         &self,
-        webhook_id: String,
-        event_id: String,
+        params: crate::methods::webhooks::WebhooksGetEventParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<GetWebhookEventResponse, crate::errors::SdkError> {
-        crate::methods::webhooks::webhooks_get_event(&self.config, webhook_id, event_id, options)
+        crate::methods::webhooks::webhooks_get_event(&self.config, params, options)
     }
     /// Triggers one additional delivery of a webhook event. The webhook must be enabled, and a manual replay does not schedule automatic retries.
     ///
     /// Queues one more delivery of the event to the webhook. The event must be retrievable through the get event endpoint and the webhook must be enabled; a disabled webhook returns a 422 validation_error. A manual replay does not schedule automatic retries.
     pub fn replay_event(
         &self,
-        webhook_id: String,
-        event_id: String,
+        params: crate::methods::webhooks::WebhooksReplayEventParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ReplayWebhookEventResponse, crate::errors::SdkError> {
-        crate::methods::webhooks::webhooks_replay_event(&self.config, webhook_id, event_id, options)
+        crate::methods::webhooks::webhooks_replay_event(&self.config, params, options)
     }
     /// Lists delivery attempts for a specific event associated with a webhook. Use `after` to continue from a cursor and `limit` to control the number of attempts returned.
     pub fn list_event_attempts(
         &self,
-        webhook_id: String,
-        event_id: String,
-        limit: Option<i64>,
-        after: Option<String>,
+        params: crate::methods::webhooks::WebhooksListEventAttemptsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListWebhookEventAttemptsResponse, crate::errors::SdkError> {
-        crate::methods::webhooks::webhooks_list_event_attempts(
-            &self.config,
-            webhook_id,
-            event_id,
-            limit,
-            after,
-            options,
-        )
+        crate::methods::webhooks::webhooks_list_event_attempts(&self.config, params, options)
     }
 }
 
@@ -926,65 +780,50 @@ impl SegmentsNamespace {
     /// Creates a segment. Provide a `name` and optionally specify the audience and filter conditions for the segment.
     pub fn create(
         &self,
-        name: String,
-        audience_id: Option<String>,
-        filter: Option<serde_json::Value>,
+        params: crate::methods::segments::SegmentsCreateParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<CreateSegmentResponseSuccess, crate::errors::SdkError> {
-        crate::methods::segments::segments_create(&self.config, name, audience_id, filter, options)
+        crate::methods::segments::segments_create(&self.config, params, options)
     }
     /// Lists segments. Use `limit` to control the number of results and `after` or `before` to navigate the results with cursors.
     pub fn list(
         &self,
-        limit: Option<i64>,
-        after: Option<String>,
-        before: Option<String>,
+        params: crate::methods::segments::SegmentsListParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListSegmentsResponseSuccess, crate::errors::SdkError> {
-        crate::methods::segments::segments_list(&self.config, limit, after, before, options)
+        crate::methods::segments::segments_list(&self.config, params, options)
     }
     /// Retrieves a segment by its identifier. Use the segment ID to look up a specific segment and its filter conditions.
     pub fn get(
         &self,
-        id: String,
+        params: crate::methods::segments::SegmentsGetParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<GetSegmentResponseSuccess, crate::errors::SdkError> {
-        crate::methods::segments::segments_get(&self.config, id, options)
+        crate::methods::segments::segments_get(&self.config, params, options)
     }
     /// Updates the name of an existing segment. Supply `name` in the request body to set the segment's name.
     pub fn update(
         &self,
-        id: String,
-        name: String,
+        params: crate::methods::segments::SegmentsUpdateParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<UpdateSegmentResponseSuccess, crate::errors::SdkError> {
-        crate::methods::segments::segments_update(&self.config, id, name, options)
+        crate::methods::segments::segments_update(&self.config, params, options)
     }
     /// Deletes an existing segment. Use the segment ID to select the segment to remove.
     pub fn remove(
         &self,
-        id: String,
+        params: crate::methods::segments::SegmentsRemoveParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<RemoveSegmentResponseSuccess, crate::errors::SdkError> {
-        crate::methods::segments::segments_remove(&self.config, id, options)
+        crate::methods::segments::segments_remove(&self.config, params, options)
     }
     /// Lists the contacts in a segment. Use `after` or `before` to navigate results with cursors, and `limit` to control the number of contacts returned.
     pub fn list_contacts(
         &self,
-        id: String,
-        limit: Option<i64>,
-        after: Option<String>,
-        before: Option<String>,
+        params: crate::methods::segments::SegmentsListContactsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListContactsResponseSuccess, crate::errors::SdkError> {
-        crate::methods::segments::segments_list_contacts(
-            &self.config,
-            id,
-            limit,
-            after,
-            before,
-            options,
-        )
+        crate::methods::segments::segments_list_contacts(&self.config, params, options)
     }
 }
 
@@ -1003,64 +842,42 @@ impl TopicsNamespace {
     /// Creates a topic for organizing contact subscriptions. Supply `name` and `default_subscription`, and optionally set a description and visibility; visibility defaults to private when omitted.
     pub fn create(
         &self,
-        name: String,
-        default_subscription: CreateTopicOptionsDefaultSubscriptionEnum,
-        description: Option<String>,
-        visibility: Option<CreateTopicOptionsVisibilityEnum>,
+        params: crate::methods::topics::TopicsCreateParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<CreateTopicResponseSuccess, crate::errors::SdkError> {
-        crate::methods::topics::topics_create(
-            &self.config,
-            name,
-            default_subscription,
-            description,
-            visibility,
-            options,
-        )
+        crate::methods::topics::topics_create(&self.config, params, options)
     }
     /// Lists topics with cursor-based pagination. Use `after` or `before` to navigate results and `limit` to control the number of topics returned.
     pub fn list(
         &self,
-        limit: Option<i64>,
-        after: Option<String>,
-        before: Option<String>,
+        params: crate::methods::topics::TopicsListParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListTopicsResponseSuccess, crate::errors::SdkError> {
-        crate::methods::topics::topics_list(&self.config, limit, after, before, options)
+        crate::methods::topics::topics_list(&self.config, params, options)
     }
     /// Retrieves a topic by its identifier. Use the topic ID to look up its name, subscription default, visibility, and other details.
     pub fn get(
         &self,
-        id: String,
+        params: crate::methods::topics::TopicsGetParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<GetTopicResponseSuccess, crate::errors::SdkError> {
-        crate::methods::topics::topics_get(&self.config, id, options)
+        crate::methods::topics::topics_get(&self.config, params, options)
     }
     /// Updates the name, description, or visibility of an existing topic. Supply only the fields you want to change; `visibility` must be `public` or `private`.
     pub fn update(
         &self,
-        id: String,
-        name: Option<String>,
-        description: Option<String>,
-        visibility: Option<UpdateTopicOptionsVisibilityEnum>,
+        params: crate::methods::topics::TopicsUpdateParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<UpdateTopicResponseSuccess, crate::errors::SdkError> {
-        crate::methods::topics::topics_update(
-            &self.config,
-            id,
-            name,
-            description,
-            visibility,
-            options,
-        )
+        crate::methods::topics::topics_update(&self.config, params, options)
     }
     /// Deletes an existing topic. Use the topic ID to select the topic to remove.
     pub fn remove(
         &self,
-        id: String,
+        params: crate::methods::topics::TopicsRemoveParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<RemoveTopicResponseSuccess, crate::errors::SdkError> {
-        crate::methods::topics::topics_remove(&self.config, id, options)
+        crate::methods::topics::topics_remove(&self.config, params, options)
     }
 }
 
@@ -1079,64 +896,42 @@ impl ContactPropertiesNamespace {
     /// Creates a custom property that you can use to store contact data. Supply `key` and `type`; use `fallback_value` to provide a default that matches the selected type.
     pub fn create(
         &self,
-        key: String,
-        type_: CreateContactPropertyOptionsTypeEnum,
-        fallback_value: Option<CreateContactPropertyOptionsFallbackValue>,
+        params: crate::methods::contact_properties::ContactPropertiesCreateParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<CreateContactPropertyResponseSuccess, crate::errors::SdkError> {
-        crate::methods::contact_properties::contact_properties_create(
-            &self.config,
-            key,
-            type_,
-            fallback_value,
-            options,
-        )
+        crate::methods::contact_properties::contact_properties_create(&self.config, params, options)
     }
     /// Lists contact properties with cursor-based pagination. Use `after` or `before` to navigate results and `limit` to control the number of properties returned.
     pub fn list(
         &self,
-        limit: Option<i64>,
-        after: Option<String>,
-        before: Option<String>,
+        params: crate::methods::contact_properties::ContactPropertiesListParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListContactPropertiesResponseSuccess, crate::errors::SdkError> {
-        crate::methods::contact_properties::contact_properties_list(
-            &self.config,
-            limit,
-            after,
-            before,
-            options,
-        )
+        crate::methods::contact_properties::contact_properties_list(&self.config, params, options)
     }
     /// Retrieves a contact property by its identifier. Use the property ID to inspect its key, type, fallback value, and creation timestamp.
     pub fn get(
         &self,
-        id: String,
+        params: crate::methods::contact_properties::ContactPropertiesGetParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<GetContactPropertyResponseSuccess, crate::errors::SdkError> {
-        crate::methods::contact_properties::contact_properties_get(&self.config, id, options)
+        crate::methods::contact_properties::contact_properties_get(&self.config, params, options)
     }
     /// Updates the fallback value for an existing contact property. Supply a `fallback_value` that matches the property’s type to change the default used when the property is unset for a contact.
     pub fn update(
         &self,
-        id: String,
-        fallback_value: Option<UpdateContactPropertyOptionsFallbackValue>,
+        params: crate::methods::contact_properties::ContactPropertiesUpdateParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<UpdateContactPropertyResponseSuccess, crate::errors::SdkError> {
-        crate::methods::contact_properties::contact_properties_update(
-            &self.config,
-            id,
-            fallback_value,
-            options,
-        )
+        crate::methods::contact_properties::contact_properties_update(&self.config, params, options)
     }
     /// Deletes an existing contact property. Use the property ID to select the property you want to remove.
     pub fn remove(
         &self,
-        id: String,
+        params: crate::methods::contact_properties::ContactPropertiesRemoveParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<RemoveContactPropertyResponseSuccess, crate::errors::SdkError> {
-        crate::methods::contact_properties::contact_properties_remove(&self.config, id, options)
+        crate::methods::contact_properties::contact_properties_remove(&self.config, params, options)
     }
 }
 
@@ -1155,20 +950,18 @@ impl LogsNamespace {
     /// Lists logs with cursor-based pagination. Use `after` or `before` to position results relative to a cursor, and `limit` to control the number of items returned.
     pub fn list(
         &self,
-        limit: Option<i64>,
-        after: Option<String>,
-        before: Option<String>,
+        params: crate::methods::logs::LogsListParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListLogsResponse, crate::errors::SdkError> {
-        crate::methods::logs::logs_list(&self.config, limit, after, before, options)
+        crate::methods::logs::logs_list(&self.config, params, options)
     }
     /// Retrieves a single log record by its identifier. Use the log details to inspect the API endpoint, method, response status, and request or response bodies recorded for the request.
     pub fn get(
         &self,
-        log_id: String,
+        params: crate::methods::logs::LogsGetParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Log, crate::errors::SdkError> {
-        crate::methods::logs::logs_get(&self.config, log_id, options)
+        crate::methods::logs::logs_get(&self.config, params, options)
     }
 }
 
@@ -1187,46 +980,26 @@ impl AutomationsNamespace {
     /// Creates an automation workflow from its name, steps, and connections. Supply at least one step, including a `trigger` step, and configure each step with its key, type, and configuration. A 201 response returns the new automation's identifier.
     pub fn create(
         &self,
-        name: String,
-        steps: Vec<AutomationStep>,
-        connections: Vec<AutomationConnection>,
-        status: Option<CreateAutomationRequestStatusEnum>,
+        params: crate::methods::automations::AutomationsCreateParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<CreateAutomationResponse, crate::errors::SdkError> {
-        crate::methods::automations::automations_create(
-            &self.config,
-            name,
-            steps,
-            connections,
-            status,
-            options,
-        )
+        crate::methods::automations::automations_create(&self.config, params, options)
     }
     /// Lists automations, with optional filtering by status and cursor-based pagination. Use `status` to select enabled or disabled automations, and use `after` or `before` to navigate results.
     pub fn list(
         &self,
-        status: Option<crate::methods::automations::AutomationsListEnum>,
-        limit: Option<i64>,
-        after: Option<String>,
-        before: Option<String>,
+        params: crate::methods::automations::AutomationsListParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListAutomationsResponse, crate::errors::SdkError> {
-        crate::methods::automations::automations_list(
-            &self.config,
-            status,
-            limit,
-            after,
-            before,
-            options,
-        )
+        crate::methods::automations::automations_list(&self.config, params, options)
     }
     /// Retrieves a single automation and its active workflow version. Use the automation details to inspect its status, timestamps, steps, and connections.
     pub fn get(
         &self,
-        automation_id: String,
+        params: crate::methods::automations::AutomationsGetParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Automation, crate::errors::SdkError> {
-        crate::methods::automations::automations_get(&self.config, automation_id, options)
+        crate::methods::automations::automations_get(&self.config, params, options)
     }
     /// Updates an automation's name, status, or workflow graph. Supply at least one of `name`, `status`, or both `steps` and `connections`; workflow graph updates require both arrays together. Provide between 1 and 150 steps when updating the graph.
     pub fn update(
@@ -1239,26 +1012,26 @@ impl AutomationsNamespace {
     /// Deletes an automation by its identifier. Use this operation to remove an automation you no longer need; the response indicates whether deletion succeeded.
     pub fn remove(
         &self,
-        automation_id: String,
+        params: crate::methods::automations::AutomationsRemoveParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<DeleteAutomationResponse, crate::errors::SdkError> {
-        crate::methods::automations::automations_remove(&self.config, automation_id, options)
+        crate::methods::automations::automations_remove(&self.config, params, options)
     }
     /// Duplicates an existing automation to create a separate automation. Supply the source automation's identifier to create the duplicate, then use the returned identifier to access it.
     pub fn duplicate(
         &self,
-        automation_id: String,
+        params: crate::methods::automations::AutomationsDuplicateParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<DuplicateAutomationResponse, crate::errors::SdkError> {
-        crate::methods::automations::automations_duplicate(&self.config, automation_id, options)
+        crate::methods::automations::automations_duplicate(&self.config, params, options)
     }
     /// Stops an automation by its identifier. Use this operation when you want the automation to stop running; the response includes its status after stopping.
     pub fn stop(
         &self,
-        automation_id: String,
+        params: crate::methods::automations::AutomationsStopParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<StopAutomationResponse, crate::errors::SdkError> {
-        crate::methods::automations::automations_stop(&self.config, automation_id, options)
+        crate::methods::automations::automations_stop(&self.config, params, options)
     }
     /// Lists runs for a specific automation, with optional filtering by run status and cursor-based pagination. Use `status` to filter by run state, and use `after` or `before` to navigate the results.
     pub fn list_runs(
@@ -1271,16 +1044,10 @@ impl AutomationsNamespace {
     /// Retrieves a single run for a specific automation. Use the run details to inspect its status, timestamps, and step executions, which are returned in workflow graph order.
     pub fn get_run(
         &self,
-        automation_id: String,
-        run_id: String,
+        params: crate::methods::automations::AutomationsGetRunParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<AutomationRun, crate::errors::SdkError> {
-        crate::methods::automations::automations_get_run(
-            &self.config,
-            automation_id,
-            run_id,
-            options,
-        )
+        crate::methods::automations::automations_get_run(&self.config, params, options)
     }
 }
 
@@ -1299,64 +1066,50 @@ impl EventsNamespace {
     /// Creates a new event with a name and an optional payload schema. The `name` cannot start with the reserved `resend:` prefix, and schema fields support the types `string`, `number`, `boolean`, and `date`.
     pub fn create(
         &self,
-        name: String,
-        schema: Option<Option<serde_json::Value>>,
+        params: crate::methods::events::EventsCreateParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<CreateEventResponse, crate::errors::SdkError> {
-        crate::methods::events::events_create(&self.config, name, schema, options)
+        crate::methods::events::events_create(&self.config, params, options)
     }
     /// Lists events available to your account. Use `after` or `before` to navigate results, and `limit` to control the number of items returned per request.
     pub fn list(
         &self,
-        limit: Option<i64>,
-        after: Option<String>,
-        before: Option<String>,
+        params: crate::methods::events::EventsListParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListEventsResponse, crate::errors::SdkError> {
-        crate::methods::events::events_list(&self.config, limit, after, before, options)
+        crate::methods::events::events_list(&self.config, params, options)
     }
     /// Sends an event and associates it with a contact or an email address. Supply the required `event` name and exactly one of `contact_id` or `email`; include `payload` to attach additional key/value data.
     pub fn send(
         &self,
-        event: String,
-        contact_id: Option<String>,
-        email: Option<String>,
-        payload: Option<std::collections::HashMap<String, serde_json::Value>>,
+        params: crate::methods::events::EventsSendParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<SendEventResponse, crate::errors::SdkError> {
-        crate::methods::events::events_send(
-            &self.config,
-            event,
-            contact_id,
-            email,
-            payload,
-            options,
-        )
+        crate::methods::events::events_send(&self.config, params, options)
     }
     /// Retrieves an event by its UUID or event name. Use the `identifier` path parameter to select the event whose name, payload schema, and timestamps you need.
     pub fn get(
         &self,
-        identifier: String,
+        params: crate::methods::events::EventsGetParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Event, crate::errors::SdkError> {
-        crate::methods::events::events_get(&self.config, identifier, options)
+        crate::methods::events::events_get(&self.config, params, options)
     }
     /// Updates the payload schema for an existing event. Supply `schema` as a flat key/type map using `string`, `number`, `boolean`, or `date`, or set it to `null` to clear the schema.
     pub fn update(
         &self,
-        identifier: String,
-        schema: Option<serde_json::Value>,
+        params: crate::methods::events::EventsUpdateParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<UpdateEventResponse, crate::errors::SdkError> {
-        crate::methods::events::events_update(&self.config, identifier, schema, options)
+        crate::methods::events::events_update(&self.config, params, options)
     }
     /// Deletes an event identified by its UUID or name. Use the `identifier` path parameter to specify which event to remove; the response indicates whether the event was deleted.
     pub fn remove(
         &self,
-        identifier: String,
+        params: crate::methods::events::EventsRemoveParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<RemoveEventResponse, crate::errors::SdkError> {
-        crate::methods::events::events_remove(&self.config, identifier, options)
+        crate::methods::events::events_remove(&self.config, params, options)
     }
 }
 
@@ -1375,61 +1128,50 @@ impl SuppressionsNamespace {
     /// Creates a suppression for an email address. Supply the required `email` value to add that address to the suppression list.
     pub fn add(
         &self,
-        email: String,
+        params: crate::methods::suppressions::SuppressionsAddParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<CreateSuppressionResponseSuccess, crate::errors::SdkError> {
-        crate::methods::suppressions::suppressions_add(&self.config, email, options)
+        crate::methods::suppressions::suppressions_add(&self.config, params, options)
     }
     /// Lists suppressions, with an optional filter for their origin. Use `after` or `before` to navigate results and `limit` to control the number of suppressions returned per request.
     pub fn list(
         &self,
-        origin: Option<crate::methods::suppressions::SuppressionsListEnum>,
-        limit: Option<i64>,
-        after: Option<String>,
-        before: Option<String>,
+        params: crate::methods::suppressions::SuppressionsListParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListSuppressionsResponseSuccess, crate::errors::SdkError> {
-        crate::methods::suppressions::suppressions_list(
-            &self.config,
-            origin,
-            limit,
-            after,
-            before,
-            options,
-        )
+        crate::methods::suppressions::suppressions_list(&self.config, params, options)
     }
     /// Adds multiple email addresses to the suppression list in one request. Supply an `emails` array containing between 1 and 100 addresses.
     pub fn batch_add(
         &self,
-        emails: Vec<String>,
+        params: crate::methods::suppressions::SuppressionsBatchAddParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<BatchAddSuppressionsResponseSuccess, crate::errors::SdkError> {
-        crate::methods::suppressions::suppressions_batch_add(&self.config, emails, options)
+        crate::methods::suppressions::suppressions_batch_add(&self.config, params, options)
     }
     /// Removes multiple suppressions from the suppression list in one request. Provide either an `emails` array or an `ids` array, but not both, with between 1 and 100 values in the selected array.
     pub fn batch_remove(
         &self,
-        emails: Option<Vec<String>>,
-        ids: Option<Vec<String>>,
+        params: crate::methods::suppressions::SuppressionsBatchRemoveParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<BatchRemoveSuppressionsResponseSuccess, crate::errors::SdkError> {
-        crate::methods::suppressions::suppressions_batch_remove(&self.config, emails, ids, options)
+        crate::methods::suppressions::suppressions_batch_remove(&self.config, params, options)
     }
     /// Retrieves a single suppression by its identifier or email address. Use `suppression` to look up the matching suppression record.
     pub fn get(
         &self,
-        suppression: String,
+        params: crate::methods::suppressions::SuppressionsGetParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<GetSuppressionResponseSuccess, crate::errors::SdkError> {
-        crate::methods::suppressions::suppressions_get(&self.config, suppression, options)
+        crate::methods::suppressions::suppressions_get(&self.config, params, options)
     }
     /// Deletes a single suppression by its identifier or email address. Use `suppression` to select the suppression to remove.
     pub fn remove(
         &self,
-        suppression: String,
+        params: crate::methods::suppressions::SuppressionsRemoveParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<RemoveSuppressionResponseSuccess, crate::errors::SdkError> {
-        crate::methods::suppressions::suppressions_remove(&self.config, suppression, options)
+        crate::methods::suppressions::suppressions_remove(&self.config, params, options)
     }
 }
 
@@ -1473,145 +1215,108 @@ impl InboxesNamespace {
     /// Creates an inbox that sends and receives email at an address on one of your domains. The domain must belong to the team. Without `forwarding`, the domain must have receiving enabled, with DKIM and SPF verified and the inbound MX record verified or pending. With `forwarding` set to `true`, the domain only needs DKIM and SPF verified for sending, and Resend generates a `receiving_address` on the team inbound domain, and a team without an inbound domain gets a 422\. A domain that does not meet these rules returns a 422 validation_error. An address or receiving address that is already in use returns a 409\. A team that has reached the inbox limit of its plan returns a 403 validation_error. A blocked account returns a 451.
     pub fn create(
         &self,
-        email_address: String,
-        name: Option<String>,
-        from_name: Option<String>,
-        forwarding: Option<bool>,
+        params: crate::methods::inboxes::InboxesCreateParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<CreateInboxResponseSuccess, crate::errors::SdkError> {
-        crate::methods::inboxes::inboxes_create(
-            &self.config,
-            email_address,
-            name,
-            from_name,
-            forwarding,
-            options,
-        )
+        crate::methods::inboxes::inboxes_create(&self.config, params, options)
     }
     /// Lists the team's inboxes, ordered from newest to oldest. Use `after` or `before` with an inbox ID to navigate the results; list items include fewer fields than an individual inbox record.
     ///
     /// Returns the inboxes of the team, newest first. The list items carry fewer fields than a single inbox. Retrieve an inbox to get all its fields. The `after` and `before` cursors take an inbox ID, and only one of them can be passed, or the request returns a 422\. A value that is not a UUID returns a 422, and an unknown ID returns a 404.
     pub fn list(
         &self,
-        limit: Option<i64>,
-        after: Option<String>,
-        before: Option<String>,
+        params: crate::methods::inboxes::InboxesListParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListInboxesResponseSuccess, crate::errors::SdkError> {
-        crate::methods::inboxes::inboxes_list(&self.config, limit, after, before, options)
+        crate::methods::inboxes::inboxes_list(&self.config, params, options)
     }
     /// Retrieves a single inbox by its ID or email address. Use an email address for a case-insensitive address lookup, or a UUID to look up the inbox by ID.
     pub fn get(
         &self,
-        inbox_id: String,
+        params: crate::methods::inboxes::InboxesGetParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Inbox, crate::errors::SdkError> {
-        crate::methods::inboxes::inboxes_get(&self.config, inbox_id, options)
+        crate::methods::inboxes::inboxes_get(&self.config, params, options)
     }
     /// Updates an inbox's internal name or the sender name recipients see. Provide at least one of `name` or `from_name`; omitted values remain unchanged.
     ///
     /// Updates the internal name of the inbox or the name recipients see when mail is sent from it. At least one of `name` or `from_name` is required.
     pub fn update(
         &self,
-        inbox_id: String,
-        name: Option<String>,
-        from_name: Option<String>,
+        params: crate::methods::inboxes::InboxesUpdateParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<UpdateInboxResponseSuccess, crate::errors::SdkError> {
-        crate::methods::inboxes::inboxes_update(&self.config, inbox_id, name, from_name, options)
+        crate::methods::inboxes::inboxes_update(&self.config, params, options)
     }
     /// Deletes an existing inbox. Use its UUID as `inbox_id`; an email address is not accepted for this operation.
     ///
     /// Removes the inbox. An inbox that does not exist or was already removed returns a 404 not_found.
     pub fn remove(
         &self,
-        inbox_id: String,
+        params: crate::methods::inboxes::InboxesRemoveParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<RemoveInboxResponseSuccess, crate::errors::SdkError> {
-        crate::methods::inboxes::inboxes_remove(&self.config, inbox_id, options)
+        crate::methods::inboxes::inboxes_remove(&self.config, params, options)
     }
     /// Retrieves the agent settings for an inbox. An inbox without a configured agent has null `instructions` and `tone` values and an empty `enabled_actions` array.
     ///
     /// Returns the agent settings of the inbox. An inbox without a configured agent returns empty settings: `instructions` and `tone` are null and `enabled_actions` is an empty array.
     pub fn get_agent(
         &self,
-        inbox_id: String,
+        params: crate::methods::inboxes::InboxesGetAgentParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<InboxAgent, crate::errors::SdkError> {
-        crate::methods::inboxes::inboxes_get_agent(&self.config, inbox_id, options)
+        crate::methods::inboxes::inboxes_get_agent(&self.config, params, options)
     }
     /// Updates the agent settings for an inbox, creating an agent if one is not configured. Provide at least one of `instructions`, `tone`, or `enabled_actions`; omitted fields keep their current values.
     ///
     /// Updates the agent settings of the inbox. The agent is created when the inbox has none. Omitted fields keep their current value.
     pub fn update_agent(
         &self,
-        inbox_id: String,
-        instructions: Option<Option<String>>,
-        tone: Option<Option<UpdateInboxAgentOptionsToneEnum>>,
-        enabled_actions: Option<Vec<UpdateInboxAgentOptionsEnabledActionsItemEnum>>,
+        params: crate::methods::inboxes::InboxesUpdateAgentParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<UpdateInboxAgentResponseSuccess, crate::errors::SdkError> {
-        crate::methods::inboxes::inboxes_update_agent(
-            &self.config,
-            inbox_id,
-            instructions,
-            tone,
-            enabled_actions,
-            options,
-        )
+        crate::methods::inboxes::inboxes_update_agent(&self.config, params, options)
     }
     /// Lists the labels attached to an inbox, ordered from oldest to newest. Use this endpoint to retrieve the inbox’s labels; the complete list is returned without pagination.
     ///
     /// Returns every label on the inbox, oldest first. The list is not paginated.
     pub fn list_labels(
         &self,
-        inbox_id: String,
+        params: crate::methods::inboxes::InboxesListLabelsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListInboxLabelsResponseSuccess, crate::errors::SdkError> {
-        crate::methods::inboxes::inboxes_list_labels(&self.config, inbox_id, options)
+        crate::methods::inboxes::inboxes_list_labels(&self.config, params, options)
     }
     /// Creates a named, colored label on an inbox. Supply a `name` between 1 and 64 characters; names are unique per inbox, without regard to case, and `color` defaults to a random dashboard palette color when omitted.
     ///
     /// A label is a named, colored tag that belongs to one inbox. An inbox can have at most 100 labels. Label names are unique per inbox, compared without case. A duplicate name or a full inbox returns a 422 validation_error.
     pub fn create_label(
         &self,
-        inbox_id: String,
-        name: String,
-        color: Option<String>,
+        params: crate::methods::inboxes::InboxesCreateLabelParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<CreateInboxLabelResponseSuccess, crate::errors::SdkError> {
-        crate::methods::inboxes::inboxes_create_label(&self.config, inbox_id, name, color, options)
+        crate::methods::inboxes::inboxes_create_label(&self.config, params, options)
     }
     /// Updates the name or color of an inbox label. Supply only the fields you want to change; omitted fields keep their current values, and a new name must remain unique on the inbox without regard to case.
     ///
     /// Renames or recolors a label. Omitted fields keep their current value. A new name must not match another label on the inbox, compared without case, or the request returns a 422 validation_error.
     pub fn update_label(
         &self,
-        inbox_id: String,
-        label_id: String,
-        name: Option<String>,
-        color: Option<String>,
+        params: crate::methods::inboxes::InboxesUpdateLabelParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<UpdateInboxLabelResponseSuccess, crate::errors::SdkError> {
-        crate::methods::inboxes::inboxes_update_label(
-            &self.config,
-            inbox_id,
-            label_id,
-            name,
-            color,
-            options,
-        )
+        crate::methods::inboxes::inboxes_update_label(&self.config, params, options)
     }
     /// Deletes a label from an inbox and removes it from every thread that carries it. Use this endpoint when you want to remove the label itself as well as its associations with threads.
     ///
     /// Deletes the label and removes it from every thread that carries it.
     pub fn remove_label(
         &self,
-        inbox_id: String,
-        label_id: String,
+        params: crate::methods::inboxes::InboxesRemoveLabelParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<RemoveInboxLabelResponseSuccess, crate::errors::SdkError> {
-        crate::methods::inboxes::inboxes_remove_label(&self.config, inbox_id, label_id, options)
+        crate::methods::inboxes::inboxes_remove_label(&self.config, params, options)
     }
     /// Lists threads in an inbox, ordered by most recent activity first. Use `folders`, `labels`, or `read` to filter the results, and use `after` or `before` to navigate by thread ID; you can pass only one cursor at a time.
     ///
@@ -1638,11 +1343,10 @@ impl InboxesNamespace {
     /// Returns the thread summary. The emails in the thread are listed with the list thread emails endpoint.
     pub fn get_thread(
         &self,
-        inbox_id: String,
-        thread_id: String,
+        params: crate::methods::inboxes::InboxesGetThreadParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<InboxThreadSummary, crate::errors::SdkError> {
-        crate::methods::inboxes::inboxes_get_thread(&self.config, inbox_id, thread_id, options)
+        crate::methods::inboxes::inboxes_get_thread(&self.config, params, options)
     }
     /// Updates a thread’s read state, folder, or labels. Supply at least one of `read`, `folder`, `add_label_ids`, or `remove_label_ids`; changes apply in that order and are not atomic, so earlier changes may remain applied if a later label operation fails.
     ///
@@ -1659,11 +1363,10 @@ impl InboxesNamespace {
     /// Moves the thread to `trash` and schedules it for deletion in 30 days. This is reversible. To restore the thread, update its `folder` to `inbox`, `archive`, or `spam`, which also clears the deletion deadline.
     pub fn remove_thread(
         &self,
-        inbox_id: String,
-        thread_id: String,
+        params: crate::methods::inboxes::InboxesRemoveThreadParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<RemoveInboxThreadResponseSuccess, crate::errors::SdkError> {
-        crate::methods::inboxes::inboxes_remove_thread(&self.config, inbox_id, thread_id, options)
+        crate::methods::inboxes::inboxes_remove_thread(&self.config, params, options)
     }
     /// Lists the messages in a thread, ordered from oldest to newest. Use `after` with the last message ID to retrieve a newer page, or `before` with the first message ID to retrieve an older page; pass only one cursor at a time.
     ///
@@ -1678,18 +1381,10 @@ impl InboxesNamespace {
     /// Retrieves a specific email from an inbox thread. Use the inbox, thread, and email identifiers to select the message whose details you need.
     pub fn get_thread_email(
         &self,
-        inbox_id: String,
-        thread_id: String,
-        email_id: String,
+        params: crate::methods::inboxes::InboxesGetThreadEmailParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<InboxThreadEmail, crate::errors::SdkError> {
-        crate::methods::inboxes::inboxes_get_thread_email(
-            &self.config,
-            inbox_id,
-            thread_id,
-            email_id,
-            options,
-        )
+        crate::methods::inboxes::inboxes_get_thread_email(&self.config, params, options)
     }
     /// Submits a reply to a message in an inbox thread directly from the inbox address, without storing a draft. Use `html` or `text` for the reply body; recipients are derived from the message, with `reply_all` controlling whether other recipients are copied. The reply is threaded under the original message.
     ///
@@ -1716,20 +1411,10 @@ impl InboxesNamespace {
     /// Returns the unsent drafts on the inbox, most recently updated first. The `after` and `before` cursors take a Draft ID from the current page, and only one of them can be passed. A cursor that is not a UUID, or both cursors together, return a 422\. A cursor that is not an unsent draft on this inbox returns a 404.
     pub fn list_drafts(
         &self,
-        inbox_id: String,
-        limit: Option<i64>,
-        after: Option<String>,
-        before: Option<String>,
+        params: crate::methods::inboxes::InboxesListDraftsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListInboxDraftsResponseSuccess, crate::errors::SdkError> {
-        crate::methods::inboxes::inboxes_list_drafts(
-            &self.config,
-            inbox_id,
-            limit,
-            after,
-            before,
-            options,
-        )
+        crate::methods::inboxes::inboxes_list_drafts(&self.config, params, options)
     }
     /// Creates an unsent draft in an inbox, either as a new thread or as a reply in an existing thread. Supply at least one non-empty recipient, subject, body, or attachment field; reply drafts require both `thread_id` and `reply_to_email_id`. If a reply draft already exists for the target email, the response returns its ID and only a supplied `attachments` value is applied.
     ///
@@ -1744,11 +1429,10 @@ impl InboxesNamespace {
     /// Retrieves a specific draft from an inbox. Use the inbox and draft identifiers to inspect its recipients, content, thread association, timestamps, and stored attachments.
     pub fn get_draft(
         &self,
-        inbox_id: String,
-        draft_id: String,
+        params: crate::methods::inboxes::InboxesGetDraftParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<InboxDraft, crate::errors::SdkError> {
-        crate::methods::inboxes::inboxes_get_draft(&self.config, inbox_id, draft_id, options)
+        crate::methods::inboxes::inboxes_get_draft(&self.config, params, options)
     }
     /// Updates the content of an unsent draft in an inbox. Send only the fields you want to change; sending `attachments` replaces all attachments, while sending `text` or `html` replaces the entire body. The merged draft must retain at least one non-empty field and no more than 50 combined recipients.
     ///
@@ -1765,31 +1449,20 @@ impl InboxesNamespace {
     /// Discards an unsent draft. A draft that was already sent, or that changed during the request, returns a 409.
     pub fn remove_draft(
         &self,
-        inbox_id: String,
-        draft_id: String,
+        params: crate::methods::inboxes::InboxesRemoveDraftParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<RemoveInboxDraftResponseSuccess, crate::errors::SdkError> {
-        crate::methods::inboxes::inboxes_remove_draft(&self.config, inbox_id, draft_id, options)
+        crate::methods::inboxes::inboxes_remove_draft(&self.config, params, options)
     }
     /// Submits an unsent draft from the inbox address. A reply draft is sent in its existing thread, while a standalone draft starts a new thread; you can add custom headers in the optional request body. Before sending, the draft must have at least one recipient, a non-empty subject, and an HTML or plain-text body.
     ///
     /// Sends the draft from the inbox address. A reply draft is sent in its thread. A draft without a thread starts a new thread. The draft must have at least one `to` recipient, a non-empty `subject`, and `html` or `text`, or the request returns a 422\. A draft that was already sent returns a 409\. The request body is optional and takes only `headers`. The whole email, encoded, can be at most 40 MB, or the request returns a 422.
     pub fn send_draft(
         &self,
-        inbox_id: String,
-        draft_id: String,
-        idempotency_key: Option<String>,
-        headers: Option<Option<std::collections::HashMap<String, String>>>,
+        params: crate::methods::inboxes::InboxesSendDraftParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<SendInboxDraftResponseSuccess, crate::errors::SdkError> {
-        crate::methods::inboxes::inboxes_send_draft(
-            &self.config,
-            inbox_id,
-            draft_id,
-            idempotency_key,
-            headers,
-            options,
-        )
+        crate::methods::inboxes::inboxes_send_draft(&self.config, params, options)
     }
 }
 

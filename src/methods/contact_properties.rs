@@ -12,6 +12,13 @@ use crate::types::{
 };
 use crate::validation::{validate_range, RangeOpts};
 
+#[derive(Debug, Clone, Default)]
+pub struct ContactPropertiesCreateParams {
+    pub key: String,
+    pub type_: CreateContactPropertyOptionsTypeEnum,
+    pub fallback_value: Option<CreateContactPropertyOptionsFallbackValue>,
+}
+
 /// Creates a custom property that you can use to store contact data. Supply `key` and `type`; use `fallback_value` to provide a default that matches the selected type.
 ///
 /// # Arguments
@@ -23,11 +30,14 @@ use crate::validation::{validate_range, RangeOpts};
 ///   for a contact. Must match the type specified in the type field.
 pub fn contact_properties_create(
     config: &ClientConfig,
-    key: String,
-    type_: CreateContactPropertyOptionsTypeEnum,
-    fallback_value: Option<CreateContactPropertyOptionsFallbackValue>,
+    params: ContactPropertiesCreateParams,
     options: Option<&RequestOptions>,
 ) -> Result<CreateContactPropertyResponseSuccess, SdkError> {
+    let ContactPropertiesCreateParams {
+        key,
+        type_,
+        fallback_value,
+    } = params;
     let mut __body_map = serde_json::Map::new();
     __body_map.insert(
         "key".to_string(),
@@ -75,6 +85,13 @@ pub fn contact_properties_create(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct ContactPropertiesListParams {
+    pub limit: Option<i64>,
+    pub after: Option<String>,
+    pub before: Option<String>,
+}
+
 /// Lists contact properties with cursor-based pagination. Use `after` or `before` to navigate results and `limit` to control the number of properties returned.
 ///
 /// # Arguments
@@ -84,11 +101,14 @@ pub fn contact_properties_create(
 /// * `before` - Return items before this cursor.
 pub fn contact_properties_list(
     config: &ClientConfig,
-    limit: Option<i64>,
-    after: Option<String>,
-    before: Option<String>,
+    params: ContactPropertiesListParams,
     options: Option<&RequestOptions>,
 ) -> Result<ListContactPropertiesResponseSuccess, SdkError> {
+    let ContactPropertiesListParams {
+        limit,
+        after,
+        before,
+    } = params;
     if let Some(ref limit_v) = limit {
         validate_range(
             "limit",
@@ -127,6 +147,11 @@ pub fn contact_properties_list(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct ContactPropertiesGetParams {
+    pub id: String,
+}
+
 /// Retrieves a contact property by its identifier. Use the property ID to inspect its key, type, fallback value, and creation timestamp.
 ///
 /// # Arguments
@@ -134,9 +159,10 @@ pub fn contact_properties_list(
 /// * `id` - The Contact Property ID.
 pub fn contact_properties_get(
     config: &ClientConfig,
-    id: String,
+    params: ContactPropertiesGetParams,
     options: Option<&RequestOptions>,
 ) -> Result<GetContactPropertyResponseSuccess, SdkError> {
+    let ContactPropertiesGetParams { id } = params;
     Ok(sdk_request::<GetContactPropertyResponseSuccess>(
         "GET",
         &format!(
@@ -154,6 +180,12 @@ pub fn contact_properties_get(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct ContactPropertiesUpdateParams {
+    pub id: String,
+    pub fallback_value: Option<UpdateContactPropertyOptionsFallbackValue>,
+}
+
 /// Updates the fallback value for an existing contact property. Supply a `fallback_value` that matches the property’s type to change the default used when the property is unset for a contact.
 ///
 /// # Arguments
@@ -163,10 +195,10 @@ pub fn contact_properties_get(
 ///   for a contact. Must match the type of the property.
 pub fn contact_properties_update(
     config: &ClientConfig,
-    id: String,
-    fallback_value: Option<UpdateContactPropertyOptionsFallbackValue>,
+    params: ContactPropertiesUpdateParams,
     options: Option<&RequestOptions>,
 ) -> Result<UpdateContactPropertyResponseSuccess, SdkError> {
+    let ContactPropertiesUpdateParams { id, fallback_value } = params;
     let mut __body_map = serde_json::Map::new();
     if let Some(ref value) = fallback_value {
         __body_map.insert(
@@ -199,6 +231,11 @@ pub fn contact_properties_update(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct ContactPropertiesRemoveParams {
+    pub id: String,
+}
+
 /// Deletes an existing contact property. Use the property ID to select the property you want to remove.
 ///
 /// # Arguments
@@ -206,9 +243,10 @@ pub fn contact_properties_update(
 /// * `id` - The Contact Property ID.
 pub fn contact_properties_remove(
     config: &ClientConfig,
-    id: String,
+    params: ContactPropertiesRemoveParams,
     options: Option<&RequestOptions>,
 ) -> Result<RemoveContactPropertyResponseSuccess, SdkError> {
+    let ContactPropertiesRemoveParams { id } = params;
     Ok(sdk_request::<RemoveContactPropertyResponseSuccess>(
         "DELETE",
         &format!(

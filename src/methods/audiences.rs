@@ -9,6 +9,11 @@ use crate::types::{
     RemoveAudienceResponseSuccess,
 };
 
+#[derive(Debug, Clone, Default)]
+pub struct AudiencesCreateParams {
+    pub name: String,
+}
+
 /// Creates an audience with the name you provide. Use the Segments endpoints instead, because this audience operation is deprecated. This operation is closing down and will be removed on a date not specified in the API definition.
 ///
 /// Deprecated: Use Segments instead. These endpoints still work, but will be removed in the future.
@@ -22,9 +27,10 @@ use crate::types::{
 /// This operation is deprecated and may be removed in a future release.
 pub fn audiences_create(
     config: &ClientConfig,
-    name: String,
+    params: AudiencesCreateParams,
     options: Option<&RequestOptions>,
 ) -> Result<CreateAudienceResponseSuccess, SdkError> {
+    let AudiencesCreateParams { name } = params;
     let mut __body_map = serde_json::Map::new();
     __body_map.insert(
         "name".to_string(),
@@ -77,6 +83,11 @@ pub fn audiences_list(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct AudiencesRemoveParams {
+    pub id: String,
+}
+
 /// Deletes an audience selected by its ID. Use the Segments endpoints instead, because this audience operation is deprecated. This operation is closing down and will be removed on a date not specified in the API definition.
 ///
 /// Deprecated: Use Segments instead. These endpoints still work, but will be removed in the future.
@@ -90,9 +101,10 @@ pub fn audiences_list(
 /// This operation is deprecated and may be removed in a future release.
 pub fn audiences_remove(
     config: &ClientConfig,
-    id: String,
+    params: AudiencesRemoveParams,
     options: Option<&RequestOptions>,
 ) -> Result<RemoveAudienceResponseSuccess, SdkError> {
+    let AudiencesRemoveParams { id } = params;
     Ok(sdk_request::<RemoveAudienceResponseSuccess>(
         "DELETE",
         &format!("/audiences/{}", crate::client::encode_path_segment(&id)),
@@ -105,6 +117,11 @@ pub fn audiences_remove(
         },
     )?
     .data)
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct AudiencesGetParams {
+    pub id: String,
 }
 
 /// Retrieves an audience by its ID. Use the Segments endpoints instead, because this audience operation is deprecated. This operation is closing down and will be removed on a date not specified in the API definition.
@@ -120,9 +137,10 @@ pub fn audiences_remove(
 /// This operation is deprecated and may be removed in a future release.
 pub fn audiences_get(
     config: &ClientConfig,
-    id: String,
+    params: AudiencesGetParams,
     options: Option<&RequestOptions>,
 ) -> Result<GetAudienceResponseSuccess, SdkError> {
+    let AudiencesGetParams { id } = params;
     Ok(sdk_request::<GetAudienceResponseSuccess>(
         "GET",
         &format!("/audiences/{}", crate::client::encode_path_segment(&id)),

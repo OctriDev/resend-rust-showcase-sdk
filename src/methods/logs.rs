@@ -7,6 +7,13 @@ use crate::errors::SdkError;
 use crate::types::{ListLogsResponse, Log};
 use crate::validation::{validate_range, validate_uuid, RangeOpts};
 
+#[derive(Debug, Clone, Default)]
+pub struct LogsListParams {
+    pub limit: Option<i64>,
+    pub after: Option<String>,
+    pub before: Option<String>,
+}
+
 /// Lists logs with cursor-based pagination. Use `after` or `before` to position results relative to a cursor, and `limit` to control the number of items returned.
 ///
 /// # Arguments
@@ -16,11 +23,14 @@ use crate::validation::{validate_range, validate_uuid, RangeOpts};
 /// * `before` - Return items before this cursor.
 pub fn logs_list(
     config: &ClientConfig,
-    limit: Option<i64>,
-    after: Option<String>,
-    before: Option<String>,
+    params: LogsListParams,
     options: Option<&RequestOptions>,
 ) -> Result<ListLogsResponse, SdkError> {
+    let LogsListParams {
+        limit,
+        after,
+        before,
+    } = params;
     if let Some(ref limit_v) = limit {
         validate_range(
             "limit",
@@ -59,6 +69,11 @@ pub fn logs_list(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct LogsGetParams {
+    pub log_id: String,
+}
+
 /// Retrieves a single log record by its identifier. Use the log details to inspect the API endpoint, method, response status, and request or response bodies recorded for the request.
 ///
 /// # Arguments
@@ -66,9 +81,10 @@ pub fn logs_list(
 /// * `log_id` - The ID of the log.
 pub fn logs_get(
     config: &ClientConfig,
-    log_id: String,
+    params: LogsGetParams,
     options: Option<&RequestOptions>,
 ) -> Result<Log, SdkError> {
+    let LogsGetParams { log_id } = params;
     validate_uuid("log_id", &log_id)?;
 
     Ok(sdk_request::<Log>(
