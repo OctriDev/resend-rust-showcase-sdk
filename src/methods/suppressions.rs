@@ -61,6 +61,11 @@ impl std::fmt::Display for SuppressionsListEnum {
     }
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct SuppressionsAddParams {
+    pub email: String,
+}
+
 /// Creates a suppression for an email address. Supply the required `email` value to add that address to the suppression list.
 ///
 /// # Arguments
@@ -68,9 +73,10 @@ impl std::fmt::Display for SuppressionsListEnum {
 /// * `email` - Email address to suppress.
 pub fn suppressions_add(
     config: &ClientConfig,
-    email: String,
+    params: SuppressionsAddParams,
     options: Option<&RequestOptions>,
 ) -> Result<CreateSuppressionResponseSuccess, SdkError> {
+    let SuppressionsAddParams { email } = params;
     let mut __body_map = serde_json::Map::new();
     __body_map.insert(
         "email".to_string(),
@@ -98,6 +104,14 @@ pub fn suppressions_add(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct SuppressionsListParams {
+    pub origin: Option<SuppressionsListEnum>,
+    pub limit: Option<i64>,
+    pub after: Option<String>,
+    pub before: Option<String>,
+}
+
 /// Lists suppressions, with an optional filter for their origin. Use `after` or `before` to navigate results and `limit` to control the number of suppressions returned per request.
 ///
 /// # Arguments
@@ -108,12 +122,15 @@ pub fn suppressions_add(
 /// * `before` - Return items before this cursor.
 pub fn suppressions_list(
     config: &ClientConfig,
-    origin: Option<SuppressionsListEnum>,
-    limit: Option<i64>,
-    after: Option<String>,
-    before: Option<String>,
+    params: SuppressionsListParams,
     options: Option<&RequestOptions>,
 ) -> Result<ListSuppressionsResponseSuccess, SdkError> {
+    let SuppressionsListParams {
+        origin,
+        limit,
+        after,
+        before,
+    } = params;
     if let Some(ref limit_v) = limit {
         validate_range(
             "limit",
@@ -155,6 +172,11 @@ pub fn suppressions_list(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct SuppressionsBatchAddParams {
+    pub emails: Vec<String>,
+}
+
 /// Adds multiple email addresses to the suppression list in one request. Supply an `emails` array containing between 1 and 100 addresses.
 ///
 /// # Arguments
@@ -162,9 +184,10 @@ pub fn suppressions_list(
 /// * `emails` - Email addresses to suppress.
 pub fn suppressions_batch_add(
     config: &ClientConfig,
-    emails: Vec<String>,
+    params: SuppressionsBatchAddParams,
     options: Option<&RequestOptions>,
 ) -> Result<BatchAddSuppressionsResponseSuccess, SdkError> {
+    let SuppressionsBatchAddParams { emails } = params;
     validate_items(
         "emails",
         &emails,
@@ -201,6 +224,12 @@ pub fn suppressions_batch_add(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct SuppressionsBatchRemoveParams {
+    pub emails: Option<Vec<String>>,
+    pub ids: Option<Vec<String>>,
+}
+
 /// Removes multiple suppressions from the suppression list in one request. Provide either an `emails` array or an `ids` array, but not both, with between 1 and 100 values in the selected array.
 ///
 /// # Arguments
@@ -209,10 +238,10 @@ pub fn suppressions_batch_add(
 /// * `ids` - Suppression IDs to remove from the suppression list.
 pub fn suppressions_batch_remove(
     config: &ClientConfig,
-    emails: Option<Vec<String>>,
-    ids: Option<Vec<String>>,
+    params: SuppressionsBatchRemoveParams,
     options: Option<&RequestOptions>,
 ) -> Result<BatchRemoveSuppressionsResponseSuccess, SdkError> {
+    let SuppressionsBatchRemoveParams { emails, ids } = params;
     if let Some(ref emails_v) = emails {
         validate_items(
             "emails",
@@ -274,6 +303,11 @@ pub fn suppressions_batch_remove(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct SuppressionsGetParams {
+    pub suppression: String,
+}
+
 /// Retrieves a single suppression by its identifier or email address. Use `suppression` to look up the matching suppression record.
 ///
 /// # Arguments
@@ -281,9 +315,10 @@ pub fn suppressions_batch_remove(
 /// * `suppression` - The Suppression ID or email address.
 pub fn suppressions_get(
     config: &ClientConfig,
-    suppression: String,
+    params: SuppressionsGetParams,
     options: Option<&RequestOptions>,
 ) -> Result<GetSuppressionResponseSuccess, SdkError> {
+    let SuppressionsGetParams { suppression } = params;
     Ok(sdk_request::<GetSuppressionResponseSuccess>(
         "GET",
         &format!(
@@ -301,6 +336,11 @@ pub fn suppressions_get(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct SuppressionsRemoveParams {
+    pub suppression: String,
+}
+
 /// Deletes a single suppression by its identifier or email address. Use `suppression` to select the suppression to remove.
 ///
 /// # Arguments
@@ -308,9 +348,10 @@ pub fn suppressions_get(
 /// * `suppression` - The Suppression ID or email address.
 pub fn suppressions_remove(
     config: &ClientConfig,
-    suppression: String,
+    params: SuppressionsRemoveParams,
     options: Option<&RequestOptions>,
 ) -> Result<RemoveSuppressionResponseSuccess, SdkError> {
+    let SuppressionsRemoveParams { suppression } = params;
     Ok(sdk_request::<RemoveSuppressionResponseSuccess>(
         "DELETE",
         &format!(

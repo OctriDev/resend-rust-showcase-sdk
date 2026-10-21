@@ -112,9 +112,11 @@ fn api_keys_create_api_keys_create_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = api_keys::api_keys_create(
         &config,
-        decode(fixture(r#""Example Name""#)),
-        Some(decode(fixture(r#""full_access""#))),
-        Some(decode(fixture(r#""domain-1""#))),
+        api_keys::ApiKeysCreateParams {
+            name: decode(fixture(r#""Example Name""#)),
+            permission: Some(decode(fixture(r#""full_access""#))),
+            domain_id: Some(decode(fixture(r#""domain-1""#))),
+        },
         None,
     )
     .expect("api_keys_create request failed");
@@ -134,9 +136,11 @@ fn api_keys_list_api_keys_list_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = api_keys::api_keys_list(
         &config,
-        Some(decode(fixture(r#"1"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""before""#))),
+        api_keys::ApiKeysListParams {
+            limit: Some(decode(fixture(r#"1"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            before: Some(decode(fixture(r#""before""#))),
+        },
         None,
     )
     .expect("api_keys_list request failed");
@@ -156,8 +160,14 @@ fn api_keys_remove_api_keys_remove_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = api_keys::api_keys_remove(&config, decode(fixture(r#""api_key-1""#)), None)
-        .expect("api_keys_remove request failed");
+    let actual = api_keys::api_keys_remove(
+        &config,
+        api_keys::ApiKeysRemoveParams {
+            api_key_id: decode(fixture(r#""api_key-1""#)),
+        },
+        None,
+    )
+    .expect("api_keys_remove request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(r#"{"object":"api_key","id":"id-1","deleted":true}"#);
     assert!(
@@ -174,8 +184,10 @@ fn api_keys_update_api_keys_update_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = api_keys::api_keys_update(
         &config,
-        decode(fixture(r#""api_key-1""#)),
-        decode(fixture(r#""Example Name""#)),
+        api_keys::ApiKeysUpdateParams {
+            api_key_id: decode(fixture(r#""api_key-1""#)),
+            name: decode(fixture(r#""Example Name""#)),
+        },
         None,
     )
     .expect("api_keys_update request failed");
@@ -193,8 +205,14 @@ fn audiences_create_audiences_create_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = audiences::audiences_create(&config, decode(fixture(r#""Example Name""#)), None)
-        .expect("audiences_create request failed");
+    let actual = audiences::audiences_create(
+        &config,
+        audiences::AudiencesCreateParams {
+            name: decode(fixture(r#""Example Name""#)),
+        },
+        None,
+    )
+    .expect("audiences_create request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"id":"78261eea-8f8b-4381-83c6-79fa7120f1cf","object":"audience","name":"Example Name"}"#,
@@ -211,8 +229,14 @@ fn audiences_get_audiences_get_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = audiences::audiences_get(&config, decode(fixture(r#""id-1""#)), None)
-        .expect("audiences_get request failed");
+    let actual = audiences::audiences_get(
+        &config,
+        audiences::AudiencesGetParams {
+            id: decode(fixture(r#""id-1""#)),
+        },
+        None,
+    )
+    .expect("audiences_get request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"id":"id-1","object":"audience","name":"Registered Users","created_at":"2023-10-06 22:59:55.977+00"}"#,
@@ -246,8 +270,14 @@ fn audiences_remove_audiences_remove_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = audiences::audiences_remove(&config, decode(fixture(r#""id-1""#)), None)
-        .expect("audiences_remove request failed");
+    let actual = audiences::audiences_remove(
+        &config,
+        audiences::AudiencesRemoveParams {
+            id: decode(fixture(r#""id-1""#)),
+        },
+        None,
+    )
+    .expect("audiences_remove request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(r#"{"id":"id-1","object":"audience","deleted":true}"#);
     assert!(
@@ -264,10 +294,12 @@ fn automations_create_automations_create_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = automations::automations_create(
         &config,
-        decode(fixture(r#""Example Name""#)),
-        decode(fixture(r#"[{"key":"key","type":"trigger","config":{}}]"#)),
-        decode(fixture(r#"[{"from":"from","to":"to","type":"default"}]"#)),
-        Some(decode(fixture(r#""disabled""#))),
+        automations::AutomationsCreateParams {
+            name: decode(fixture(r#""Example Name""#)),
+            steps: decode(fixture(r#"[{"key":"key","type":"trigger","config":{}}]"#)),
+            connections: decode(fixture(r#"[{"from":"from","to":"to","type":"default"}]"#)),
+            status: Some(decode(fixture(r#""disabled""#))),
+        },
         None,
     )
     .expect("automations_create request failed");
@@ -287,7 +319,9 @@ fn automations_duplicate_automations_duplicate_reaches_mock_and_decodes_response
     let _ = &config;
     let actual = automations::automations_duplicate(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        automations::AutomationsDuplicateParams {
+            automation_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        },
         None,
     )
     .expect("automations_duplicate request failed");
@@ -307,7 +341,9 @@ fn automations_get_automations_get_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = automations::automations_get(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        automations::AutomationsGetParams {
+            automation_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        },
         None,
     )
     .expect("automations_get request failed");
@@ -329,8 +365,10 @@ fn automations_get_run_automations_get_run_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = automations::automations_get_run(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        automations::AutomationsGetRunParams {
+            automation_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+            run_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        },
         None,
     )
     .expect("automations_get_run request failed");
@@ -352,10 +390,12 @@ fn automations_list_automations_list_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = automations::automations_list(
         &config,
-        Some(decode(fixture(r#""enabled""#))),
-        Some(decode(fixture(r#"1"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""before""#))),
+        automations::AutomationsListParams {
+            status: Some(decode(fixture(r#""enabled""#))),
+            limit: Some(decode(fixture(r#"1"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            before: Some(decode(fixture(r#""before""#))),
+        },
         None,
     )
     .expect("automations_list request failed");
@@ -405,7 +445,9 @@ fn automations_remove_automations_remove_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = automations::automations_remove(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        automations::AutomationsRemoveParams {
+            automation_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        },
         None,
     )
     .expect("automations_remove request failed");
@@ -425,7 +467,9 @@ fn automations_stop_automations_stop_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = automations::automations_stop(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        automations::AutomationsStopParams {
+            automation_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        },
         None,
     )
     .expect("automations_stop request failed");
@@ -475,7 +519,9 @@ fn broadcasts_cancel_broadcasts_cancel_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = broadcasts::broadcasts_cancel(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        broadcasts::BroadcastsCancelParams {
+            id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        },
         None,
     )
     .expect("broadcasts_cancel request failed");
@@ -528,7 +574,9 @@ fn broadcasts_duplicate_broadcasts_duplicate_reaches_mock_and_decodes_response()
     let _ = &config;
     let actual = broadcasts::broadcasts_duplicate(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        broadcasts::BroadcastsDuplicateParams {
+            id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        },
         None,
     )
     .expect("broadcasts_duplicate request failed");
@@ -546,8 +594,14 @@ fn broadcasts_get_broadcasts_get_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = broadcasts::broadcasts_get(&config, decode(fixture(r#""id-1""#)), None)
-        .expect("broadcasts_get request failed");
+    let actual = broadcasts::broadcasts_get(
+        &config,
+        broadcasts::BroadcastsGetParams {
+            id: decode(fixture(r#""id-1""#)),
+        },
+        None,
+    )
+    .expect("broadcasts_get request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"id":"id-1","name":"November announcements","audience_id":"audience-1","segment_id":"segment-1","from":"Acme <onboarding@resend.dev>","subject":"Hello World","reply_to":["reply_to"],"preview_text":"Here are our announcements","status":"draft","created_at":"2023-10-06 22:59:55.977+00","scheduled_at":"2023-10-06 22:59:55.977+00","sent_at":"2023-10-06 22:59:55.977+00","text":"Hello {{{FIRST_NAME|there}}}!","html":"<p>Hello {{{FIRST_NAME|there}}}!</p>","topic_id":"b6d24b8e-af0b-4c3c-be0c-359bbd97381e"}"#,
@@ -566,9 +620,11 @@ fn broadcasts_list_broadcasts_list_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = broadcasts::broadcasts_list(
         &config,
-        Some(decode(fixture(r#"1"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""before""#))),
+        broadcasts::BroadcastsListParams {
+            limit: Some(decode(fixture(r#"1"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            before: Some(decode(fixture(r#""before""#))),
+        },
         None,
     )
     .expect("broadcasts_list request failed");
@@ -590,10 +646,12 @@ fn broadcasts_list_clicked_links_broadcasts_list_clicked_links_reaches_mock_and_
     let _ = &config;
     let actual = broadcasts::broadcasts_list_clicked_links(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
-        Some(decode(fixture(r#"1"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""before""#))),
+        broadcasts::BroadcastsListClickedLinksParams {
+            id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+            limit: Some(decode(fixture(r#"1"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            before: Some(decode(fixture(r#""before""#))),
+        },
         None,
     )
     .expect("broadcasts_list_clicked_links request failed");
@@ -613,8 +671,14 @@ fn broadcasts_remove_broadcasts_remove_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = broadcasts::broadcasts_remove(&config, decode(fixture(r#""id-1""#)), None)
-        .expect("broadcasts_remove request failed");
+    let actual = broadcasts::broadcasts_remove(
+        &config,
+        broadcasts::BroadcastsRemoveParams {
+            id: decode(fixture(r#""id-1""#)),
+        },
+        None,
+    )
+    .expect("broadcasts_remove request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(r#"{"id":"id-1","object":"broadcast","deleted":true}"#);
     assert!(
@@ -631,8 +695,10 @@ fn broadcasts_send_broadcasts_send_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = broadcasts::broadcasts_send(
         &config,
-        decode(fixture(r#""id-1""#)),
-        Some(decode(fixture(r#""2024-01-01T00:00:00Z""#))),
+        broadcasts::BroadcastsSendParams {
+            id: decode(fixture(r#""id-1""#)),
+            scheduled_at: Some(decode(fixture(r#""2024-01-01T00:00:00Z""#))),
+        },
         None,
     )
     .expect("broadcasts_send request failed");
@@ -684,9 +750,11 @@ fn contact_properties_create_contact_properties_create_reaches_mock_and_decodes_
     let _ = &config;
     let actual = contact_properties::contact_properties_create(
         &config,
-        decode(fixture(r#""key""#)),
-        decode(fixture(r#""string""#)),
-        Some(decode(fixture(r#""fallback_value""#))),
+        contact_properties::ContactPropertiesCreateParams {
+            key: decode(fixture(r#""key""#)),
+            type_: decode(fixture(r#""string""#)),
+            fallback_value: Some(decode(fixture(r#""fallback_value""#))),
+        },
         None,
     )
     .expect("contact_properties_create request failed");
@@ -705,9 +773,14 @@ fn contact_properties_get_contact_properties_get_reaches_mock_and_decodes_respon
         return;
     };
     let _ = &config;
-    let actual =
-        contact_properties::contact_properties_get(&config, decode(fixture(r#""id-1""#)), None)
-            .expect("contact_properties_get request failed");
+    let actual = contact_properties::contact_properties_get(
+        &config,
+        contact_properties::ContactPropertiesGetParams {
+            id: decode(fixture(r#""id-1""#)),
+        },
+        None,
+    )
+    .expect("contact_properties_get request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"object":"contact_property","id":"id-1","key":"company_name","type":"string","fallback_value":"Acme Corp","created_at":"2023-10-06 23:47:56.678+00"}"#,
@@ -726,9 +799,11 @@ fn contact_properties_list_contact_properties_list_reaches_mock_and_decodes_resp
     let _ = &config;
     let actual = contact_properties::contact_properties_list(
         &config,
-        Some(decode(fixture(r#"1"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""before""#))),
+        contact_properties::ContactPropertiesListParams {
+            limit: Some(decode(fixture(r#"1"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            before: Some(decode(fixture(r#""before""#))),
+        },
         None,
     )
     .expect("contact_properties_list request failed");
@@ -748,9 +823,14 @@ fn contact_properties_remove_contact_properties_remove_reaches_mock_and_decodes_
         return;
     };
     let _ = &config;
-    let actual =
-        contact_properties::contact_properties_remove(&config, decode(fixture(r#""id-1""#)), None)
-            .expect("contact_properties_remove request failed");
+    let actual = contact_properties::contact_properties_remove(
+        &config,
+        contact_properties::ContactPropertiesRemoveParams {
+            id: decode(fixture(r#""id-1""#)),
+        },
+        None,
+    )
+    .expect("contact_properties_remove request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(r#"{"id":"id-1","object":"contact_property","deleted":true}"#);
     assert!(
@@ -767,8 +847,10 @@ fn contact_properties_update_contact_properties_update_reaches_mock_and_decodes_
     let _ = &config;
     let actual = contact_properties::contact_properties_update(
         &config,
-        decode(fixture(r#""id-1""#)),
-        Some(decode(fixture(r#""fallback_value""#))),
+        contact_properties::ContactPropertiesUpdateParams {
+            id: decode(fixture(r#""id-1""#)),
+            fallback_value: Some(decode(fixture(r#""fallback_value""#))),
+        },
         None,
     )
     .expect("contact_properties_update request failed");
@@ -788,8 +870,10 @@ fn contacts_add_segment_contacts_add_segment_reaches_mock_and_decodes_response()
     let _ = &config;
     let actual = contacts::contacts_add_segment(
         &config,
-        decode(fixture(r#""contact-1""#)),
-        decode(fixture(r#""segment-1""#)),
+        contacts::ContactsAddSegmentParams {
+            contact_id: decode(fixture(r#""contact-1""#)),
+            segment_id: decode(fixture(r#""segment-1""#)),
+        },
         None,
     )
     .expect("contacts_add_segment request failed");
@@ -867,8 +951,14 @@ fn contacts_get_contacts_get_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = contacts::contacts_get(&config, decode(fixture(r#""id-1""#)), None)
-        .expect("contacts_get request failed");
+    let actual = contacts::contacts_get(
+        &config,
+        contacts::ContactsGetParams {
+            id: decode(fixture(r#""id-1""#)),
+        },
+        None,
+    )
+    .expect("contacts_get request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"object":"contact","id":"id-1","email":"steve.wozniak@gmail.com","first_name":"Steve","last_name":"Wozniak","created_at":"2023-10-06 23:47:56.678+00","unsubscribed":false,"properties":{}}"#,
@@ -887,7 +977,9 @@ fn contacts_get_import_contacts_get_import_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = contacts::contacts_get_import(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        contacts::ContactsGetImportParams {
+            id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        },
         None,
     )
     .expect("contacts_get_import request failed");
@@ -909,9 +1001,11 @@ fn contacts_list_contacts_list_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = contacts::contacts_list(
         &config,
-        Some(decode(fixture(r#"1"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""before""#))),
+        contacts::ContactsListParams {
+            limit: Some(decode(fixture(r#"1"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            before: Some(decode(fixture(r#""before""#))),
+        },
         None,
     )
     .expect("contacts_list request failed");
@@ -933,10 +1027,12 @@ fn contacts_list_imports_contacts_list_imports_reaches_mock_and_decodes_response
     let _ = &config;
     let actual = contacts::contacts_list_imports(
         &config,
-        Some(decode(fixture(r#""queued""#))),
-        Some(decode(fixture(r#"1"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""before""#))),
+        contacts::ContactsListImportsParams {
+            status: Some(decode(fixture(r#""queued""#))),
+            limit: Some(decode(fixture(r#"1"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            before: Some(decode(fixture(r#""before""#))),
+        },
         None,
     )
     .expect("contacts_list_imports request failed");
@@ -958,10 +1054,12 @@ fn contacts_list_segments_contacts_list_segments_reaches_mock_and_decodes_respon
     let _ = &config;
     let actual = contacts::contacts_list_segments(
         &config,
-        decode(fixture(r#""contact-1""#)),
-        Some(decode(fixture(r#"1"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""before""#))),
+        contacts::ContactsListSegmentsParams {
+            contact_id: decode(fixture(r#""contact-1""#)),
+            limit: Some(decode(fixture(r#"1"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            before: Some(decode(fixture(r#""before""#))),
+        },
         None,
     )
     .expect("contacts_list_segments request failed");
@@ -983,10 +1081,12 @@ fn contacts_list_topics_contacts_list_topics_reaches_mock_and_decodes_response()
     let _ = &config;
     let actual = contacts::contacts_list_topics(
         &config,
-        decode(fixture(r#""contact-1""#)),
-        Some(decode(fixture(r#"1"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""before""#))),
+        contacts::ContactsListTopicsParams {
+            contact_id: decode(fixture(r#""contact-1""#)),
+            limit: Some(decode(fixture(r#"1"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            before: Some(decode(fixture(r#""before""#))),
+        },
         None,
     )
     .expect("contacts_list_topics request failed");
@@ -1006,8 +1106,14 @@ fn contacts_remove_contacts_remove_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = contacts::contacts_remove(&config, decode(fixture(r#""id-1""#)), None)
-        .expect("contacts_remove request failed");
+    let actual = contacts::contacts_remove(
+        &config,
+        contacts::ContactsRemoveParams {
+            id: decode(fixture(r#""id-1""#)),
+        },
+        None,
+    )
+    .expect("contacts_remove request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(r#"{"object":"contact","id":"id-1","deleted":true}"#);
     assert!(
@@ -1024,8 +1130,10 @@ fn contacts_remove_segment_contacts_remove_segment_reaches_mock_and_decodes_resp
     let _ = &config;
     let actual = contacts::contacts_remove_segment(
         &config,
-        decode(fixture(r#""contact-1""#)),
-        decode(fixture(r#""segment-1""#)),
+        contacts::ContactsRemoveSegmentParams {
+            contact_id: decode(fixture(r#""contact-1""#)),
+            segment_id: decode(fixture(r#""segment-1""#)),
+        },
         None,
     )
     .expect("contacts_remove_segment request failed");
@@ -1074,8 +1182,10 @@ fn contacts_update_topics_contacts_update_topics_reaches_mock_and_decodes_respon
     let _ = &config;
     let actual = contacts::contacts_update_topics(
         &config,
-        decode(fixture(r#""contact-1""#)),
-        decode(fixture(r#"[{"id":"id-1","subscription":"opt_in"}]"#)),
+        contacts::ContactsUpdateTopicsParams {
+            contact_id: decode(fixture(r#""contact-1""#)),
+            topics: decode(fixture(r#"[{"id":"id-1","subscription":"opt_in"}]"#)),
+        },
         None,
     )
     .expect("contacts_update_topics request failed");
@@ -1157,8 +1267,14 @@ fn domains_get_domains_get_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = domains::domains_get(&config, decode(fixture(r#""domain-1""#)), None)
-        .expect("domains_get request failed");
+    let actual = domains::domains_get(
+        &config,
+        domains::DomainsGetParams {
+            domain_id: decode(fixture(r#""domain-1""#)),
+        },
+        None,
+    )
+    .expect("domains_get request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"object":"domain","id":"d91cd9bd-1176-453e-8fc1-35364d380206","name":"example.com","status":"not_started","created_at":"2023-04-26 20:21:26.347412+00","region":"us-east-1","open_tracking":false,"click_tracking":false,"tracking_subdomain":"tracking_subdomain","capabilities":{"sending":"enabled","receiving":"enabled"},"records":[{"record":"SPF","name":"Example Name","type":"MX","ttl":"ttl","status":"pending","value":"value","priority":1}]}"#,
@@ -1175,8 +1291,14 @@ fn domains_get_claim_domains_get_claim_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = domains::domains_get_claim(&config, decode(fixture(r#""domain-1""#)), None)
-        .expect("domains_get_claim request failed");
+    let actual = domains::domains_get_claim(
+        &config,
+        domains::DomainsGetClaimParams {
+            domain_id: decode(fixture(r#""domain-1""#)),
+        },
+        None,
+    )
+    .expect("domains_get_claim request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"object":"domain_claim","id":"d91cd9bd-1176-453e-8fc1-35364d380206","name":"example.com","status":"pending","domain_id":"domain-1","region":"us-east-1","record":{"type":"TXT","name":"example.com","value":"resend-domain-verification=abc123","ttl":"Auto"},"blocked_reason":null,"failure_reason":null,"created_at":"2023-04-26 20:21:26.347412+00","expires_at":"2023-05-03 20:21:26.347412+00"}"#,
@@ -1195,9 +1317,11 @@ fn domains_list_domains_list_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = domains::domains_list(
         &config,
-        Some(decode(fixture(r#"1"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""before""#))),
+        domains::DomainsListParams {
+            limit: Some(decode(fixture(r#"1"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            before: Some(decode(fixture(r#""before""#))),
+        },
         None,
     )
     .expect("domains_list request failed");
@@ -1217,8 +1341,14 @@ fn domains_remove_domains_remove_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = domains::domains_remove(&config, decode(fixture(r#""domain-1""#)), None)
-        .expect("domains_remove request failed");
+    let actual = domains::domains_remove(
+        &config,
+        domains::DomainsRemoveParams {
+            domain_id: decode(fixture(r#""domain-1""#)),
+        },
+        None,
+    )
+    .expect("domains_remove request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"object":"domain","id":"d91cd9bd-1176-453e-8fc1-35364d380206","deleted":true}"#,
@@ -1264,8 +1394,14 @@ fn domains_verify_domains_verify_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = domains::domains_verify(&config, decode(fixture(r#""domain-1""#)), None)
-        .expect("domains_verify request failed");
+    let actual = domains::domains_verify(
+        &config,
+        domains::DomainsVerifyParams {
+            domain_id: decode(fixture(r#""domain-1""#)),
+        },
+        None,
+    )
+    .expect("domains_verify request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(r#"{"object":"domain","id":"d91cd9bd-1176-453e-8fc1-35364d380206"}"#);
     assert!(
@@ -1280,8 +1416,14 @@ fn domains_verify_claim_domains_verify_claim_reaches_mock_and_decodes_response()
         return;
     };
     let _ = &config;
-    let actual = domains::domains_verify_claim(&config, decode(fixture(r#""domain-1""#)), None)
-        .expect("domains_verify_claim request failed");
+    let actual = domains::domains_verify_claim(
+        &config,
+        domains::DomainsVerifyClaimParams {
+            domain_id: decode(fixture(r#""domain-1""#)),
+        },
+        None,
+    )
+    .expect("domains_verify_claim request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"object":"domain_claim","id":"d91cd9bd-1176-453e-8fc1-35364d380206","name":"example.com","status":"pending","domain_id":"domain-1","region":"us-east-1","record":{"type":"TXT","name":"example.com","value":"resend-domain-verification=abc123","ttl":"Auto"},"blocked_reason":null,"failure_reason":null,"created_at":"2023-04-26 20:21:26.347412+00","expires_at":"2023-05-03 20:21:26.347412+00"}"#,
@@ -1298,8 +1440,14 @@ fn emails_cancel_emails_cancel_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = emails::emails_cancel(&config, decode(fixture(r#""email-1""#)), None)
-        .expect("emails_cancel request failed");
+    let actual = emails::emails_cancel(
+        &config,
+        emails::EmailsCancelParams {
+            email_id: decode(fixture(r#""email-1""#)),
+        },
+        None,
+    )
+    .expect("emails_cancel request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"object":"email","id":"4ef9a417-02e9-4d39-ad75-9611e0fcc33c","message_id":"<202301010000.4ef9a417@email.example.com>","to":["delivered@resend.dev"],"from":"Acme <onboarding@resend.dev>","created_at":"2023-04-03 22:13:42.674981+00","subject":"Hello World","html":"Congrats on sending your <strong>first email</strong>!","text":"text","bcc":["bcc"],"cc":["cc"],"reply_to":["reply_to"],"last_event":"delivered"}"#,
@@ -1316,8 +1464,14 @@ fn emails_get_emails_get_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = emails::emails_get(&config, decode(fixture(r#""email-1""#)), None)
-        .expect("emails_get request failed");
+    let actual = emails::emails_get(
+        &config,
+        emails::EmailsGetParams {
+            email_id: decode(fixture(r#""email-1""#)),
+        },
+        None,
+    )
+    .expect("emails_get request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"object":"email","id":"4ef9a417-02e9-4d39-ad75-9611e0fcc33c","message_id":"<202301010000.4ef9a417@email.example.com>","to":["delivered@resend.dev"],"from":"Acme <onboarding@resend.dev>","created_at":"2023-04-03 22:13:42.674981+00","subject":"Hello World","html":"Congrats on sending your <strong>first email</strong>!","text":"text","bcc":["bcc"],"cc":["cc"],"reply_to":["reply_to"],"last_event":"delivered"}"#,
@@ -1336,8 +1490,10 @@ fn emails_get_attachment_emails_get_attachment_reaches_mock_and_decodes_response
     let _ = &config;
     let actual = emails::emails_get_attachment(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        emails::EmailsGetAttachmentParams {
+            email_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+            attachment_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        },
         None,
     )
     .expect("emails_get_attachment request failed");
@@ -1359,9 +1515,11 @@ fn emails_list_emails_list_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = emails::emails_list(
         &config,
-        Some(decode(fixture(r#"1"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""before""#))),
+        emails::EmailsListParams {
+            limit: Some(decode(fixture(r#"1"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            before: Some(decode(fixture(r#""before""#))),
+        },
         None,
     )
     .expect("emails_list request failed");
@@ -1383,10 +1541,12 @@ fn emails_list_attachments_emails_list_attachments_reaches_mock_and_decodes_resp
     let _ = &config;
     let actual = emails::emails_list_attachments(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
-        Some(decode(fixture(r#"1"#))),
-        Some(decode(fixture(r#""00000000-0000-4000-8000-000000000000""#))),
-        Some(decode(fixture(r#""00000000-0000-4000-8000-000000000000""#))),
+        emails::EmailsListAttachmentsParams {
+            email_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+            limit: Some(decode(fixture(r#"1"#))),
+            after: Some(decode(fixture(r#""00000000-0000-4000-8000-000000000000""#))),
+            before: Some(decode(fixture(r#""00000000-0000-4000-8000-000000000000""#))),
+        },
         None,
     )
     .expect("emails_list_attachments request failed");
@@ -1444,8 +1604,10 @@ fn emails_send_batch_emails_send_batch_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = emails::emails_send_batch(
         &config,
-        Some(decode(fixture(r#""Idempotency-Key""#))),
-        Some(decode(fixture(r#"[{"from":"user@example.com","to":"to","subject":"subject","bcc":"bcc","cc":"cc","reply_to":"reply_to","html":"html","text":"text","template":{"id":"id-1","variables":{"variableName":"Sign up now","variableName2":123}},"headers":{},"scheduled_at":"2024-01-01T00:00:00Z","attachments":[{"content":"ZXhhbXBsZQ==","filename":"Example Name","path":"path","content_type":"content_type","content_id":"content-1"}],"tags":[{"name":"Example Name","value":"value"}],"topic_id":"topic-1"}]"#))),
+        emails::EmailsSendBatchParams {
+            idempotency_key: Some(decode(fixture(r#""Idempotency-Key""#))),
+            body: Some(decode(fixture(r#"[{"from":"user@example.com","to":"to","subject":"subject","bcc":"bcc","cc":"cc","reply_to":"reply_to","html":"html","text":"text","template":{"id":"id-1","variables":{"variableName":"Sign up now","variableName2":123}},"headers":{},"scheduled_at":"2024-01-01T00:00:00Z","attachments":[{"content":"ZXhhbXBsZQ==","filename":"Example Name","path":"path","content_type":"content_type","content_id":"content-1"}],"tags":[{"name":"Example Name","value":"value"}],"topic_id":"topic-1"}]"#))),
+        },
         None,
     )
     .expect("emails_send_batch request failed");
@@ -1465,8 +1627,10 @@ fn emails_share_emails_share_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = emails::emails_share(
         &config,
-        decode(fixture(r#""email-1""#)),
-        Some(decode(fixture(r#""expires_in""#))),
+        emails::EmailsShareParams {
+            email_id: decode(fixture(r#""email-1""#)),
+            expires_in: Some(decode(fixture(r#""expires_in""#))),
+        },
         None,
     )
     .expect("emails_share request failed");
@@ -1486,8 +1650,14 @@ fn emails_update_emails_update_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = emails::emails_update(&config, decode(fixture(r#""email-1""#)), None)
-        .expect("emails_update request failed");
+    let actual = emails::emails_update(
+        &config,
+        emails::EmailsUpdateParams {
+            email_id: decode(fixture(r#""email-1""#)),
+        },
+        None,
+    )
+    .expect("emails_update request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(r#"{"scheduled_at":"2024-01-01T00:00:00Z"}"#);
     assert!(
@@ -1504,8 +1674,10 @@ fn events_create_events_create_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = events::events_create(
         &config,
-        decode(fixture(r#""Example Name""#)),
-        Some(Some(decode(fixture(r#"{}"#)))),
+        events::EventsCreateParams {
+            name: decode(fixture(r#""Example Name""#)),
+            schema: Some(Some(decode(fixture(r#"{}"#)))),
+        },
         None,
     )
     .expect("events_create request failed");
@@ -1523,8 +1695,14 @@ fn events_get_events_get_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = events::events_get(&config, decode(fixture(r#""identifier""#)), None)
-        .expect("events_get request failed");
+    let actual = events::events_get(
+        &config,
+        events::EventsGetParams {
+            identifier: decode(fixture(r#""identifier""#)),
+        },
+        None,
+    )
+    .expect("events_get request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"object":"event","id":"00000000-0000-4000-8000-000000000000","name":"Example Name","schema":{},"created_at":"2023-10-06 23:47:56.678+00","updated_at":"2023-10-06 23:47:56.678+00"}"#,
@@ -1543,9 +1721,11 @@ fn events_list_events_list_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = events::events_list(
         &config,
-        Some(decode(fixture(r#"1"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""before""#))),
+        events::EventsListParams {
+            limit: Some(decode(fixture(r#"1"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            before: Some(decode(fixture(r#""before""#))),
+        },
         None,
     )
     .expect("events_list request failed");
@@ -1565,8 +1745,14 @@ fn events_remove_events_remove_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = events::events_remove(&config, decode(fixture(r#""identifier""#)), None)
-        .expect("events_remove request failed");
+    let actual = events::events_remove(
+        &config,
+        events::EventsRemoveParams {
+            identifier: decode(fixture(r#""identifier""#)),
+        },
+        None,
+    )
+    .expect("events_remove request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected =
         fixture(r#"{"object":"event","id":"00000000-0000-4000-8000-000000000000","deleted":true}"#);
@@ -1584,10 +1770,12 @@ fn events_send_events_send_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = events::events_send(
         &config,
-        decode(fixture(r#""event""#)),
-        Some(decode(fixture(r#""00000000-0000-4000-8000-000000000000""#))),
-        Some(decode(fixture(r#""user@example.com""#))),
-        Some(decode(fixture(r#"{}"#))),
+        events::EventsSendParams {
+            event: decode(fixture(r#""event""#)),
+            contact_id: Some(decode(fixture(r#""00000000-0000-4000-8000-000000000000""#))),
+            email: Some(decode(fixture(r#""user@example.com""#))),
+            payload: Some(decode(fixture(r#"{}"#))),
+        },
         None,
     )
     .expect("events_send request failed");
@@ -1607,8 +1795,10 @@ fn events_update_events_update_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = events::events_update(
         &config,
-        decode(fixture(r#""identifier""#)),
-        Some(decode(fixture(r#"{}"#))),
+        events::EventsUpdateParams {
+            identifier: decode(fixture(r#""identifier""#)),
+            schema: Some(decode(fixture(r#"{}"#))),
+        },
         None,
     )
     .expect("events_update request failed");
@@ -1628,7 +1818,9 @@ fn get_get_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = receiving_emails::get(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        receiving_emails::GetParams {
+            email_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        },
         None,
     )
     .expect("get request failed");
@@ -1650,8 +1842,10 @@ fn get_attachment_get_attachment_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = receiving_emails::get_attachment(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        receiving_emails::GetAttachmentParams {
+            email_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+            attachment_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        },
         None,
     )
     .expect("get_attachment request failed");
@@ -1711,10 +1905,12 @@ fn inboxes_create_inboxes_create_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = inboxes::inboxes_create(
         &config,
-        decode(fixture(r#""support@acme.com""#)),
-        Some(decode(fixture(r#""Customer Support""#))),
-        Some(decode(fixture(r#""Ada from Support""#))),
-        Some(decode(fixture(r#"false"#))),
+        inboxes::InboxesCreateParams {
+            email_address: decode(fixture(r#""support@acme.com""#)),
+            name: Some(decode(fixture(r#""Customer Support""#))),
+            from_name: Some(decode(fixture(r#""Ada from Support""#))),
+            forwarding: Some(decode(fixture(r#"false"#))),
+        },
         None,
     )
     .expect("inboxes_create request failed");
@@ -1767,9 +1963,11 @@ fn inboxes_create_label_inboxes_create_label_reaches_mock_and_decodes_response()
     let _ = &config;
     let actual = inboxes::inboxes_create_label(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
-        decode(fixture(r#""Urgent""#)),
-        Some(decode(fixture(r##""#E93D82""##))),
+        inboxes::InboxesCreateLabelParams {
+            inbox_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+            name: decode(fixture(r#""Urgent""#)),
+            color: Some(decode(fixture(r##""#E93D82""##))),
+        },
         None,
     )
     .expect("inboxes_create_label request failed");
@@ -1823,7 +2021,9 @@ fn inboxes_get_inboxes_get_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = inboxes::inboxes_get(
         &config,
-        decode(fixture(r#""b3e2b2b6-3f0e-4c8e-9ad3-2f43a1e2c7f1""#)),
+        inboxes::InboxesGetParams {
+            inbox_id: decode(fixture(r#""b3e2b2b6-3f0e-4c8e-9ad3-2f43a1e2c7f1""#)),
+        },
         None,
     )
     .expect("inboxes_get request failed");
@@ -1845,7 +2045,9 @@ fn inboxes_get_agent_inboxes_get_agent_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = inboxes::inboxes_get_agent(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        inboxes::InboxesGetAgentParams {
+            inbox_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        },
         None,
     )
     .expect("inboxes_get_agent request failed");
@@ -1867,8 +2069,10 @@ fn inboxes_get_draft_inboxes_get_draft_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = inboxes::inboxes_get_draft(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        inboxes::InboxesGetDraftParams {
+            inbox_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+            draft_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        },
         None,
     )
     .expect("inboxes_get_draft request failed");
@@ -1890,8 +2094,10 @@ fn inboxes_get_thread_inboxes_get_thread_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = inboxes::inboxes_get_thread(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        inboxes::InboxesGetThreadParams {
+            inbox_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+            thread_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        },
         None,
     )
     .expect("inboxes_get_thread request failed");
@@ -1913,9 +2119,11 @@ fn inboxes_get_thread_email_inboxes_get_thread_email_reaches_mock_and_decodes_re
     let _ = &config;
     let actual = inboxes::inboxes_get_thread_email(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        inboxes::InboxesGetThreadEmailParams {
+            inbox_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+            thread_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+            email_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        },
         None,
     )
     .expect("inboxes_get_thread_email request failed");
@@ -1937,9 +2145,11 @@ fn inboxes_list_inboxes_list_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = inboxes::inboxes_list(
         &config,
-        Some(decode(fixture(r#"1"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""before""#))),
+        inboxes::InboxesListParams {
+            limit: Some(decode(fixture(r#"1"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            before: Some(decode(fixture(r#""before""#))),
+        },
         None,
     )
     .expect("inboxes_list request failed");
@@ -1961,10 +2171,12 @@ fn inboxes_list_drafts_inboxes_list_drafts_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = inboxes::inboxes_list_drafts(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
-        Some(decode(fixture(r#"1"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""before""#))),
+        inboxes::InboxesListDraftsParams {
+            inbox_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+            limit: Some(decode(fixture(r#"1"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            before: Some(decode(fixture(r#""before""#))),
+        },
         None,
     )
     .expect("inboxes_list_drafts request failed");
@@ -1986,7 +2198,9 @@ fn inboxes_list_labels_inboxes_list_labels_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = inboxes::inboxes_list_labels(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        inboxes::InboxesListLabelsParams {
+            inbox_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        },
         None,
     )
     .expect("inboxes_list_labels request failed");
@@ -2068,7 +2282,9 @@ fn inboxes_remove_inboxes_remove_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = inboxes::inboxes_remove(
         &config,
-        decode(fixture(r#""b3e2b2b6-3f0e-4c8e-9ad3-2f43a1e2c7f1""#)),
+        inboxes::InboxesRemoveParams {
+            inbox_id: decode(fixture(r#""b3e2b2b6-3f0e-4c8e-9ad3-2f43a1e2c7f1""#)),
+        },
         None,
     )
     .expect("inboxes_remove request failed");
@@ -2089,8 +2305,10 @@ fn inboxes_remove_draft_inboxes_remove_draft_reaches_mock_and_decodes_response()
     let _ = &config;
     let actual = inboxes::inboxes_remove_draft(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        inboxes::InboxesRemoveDraftParams {
+            inbox_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+            draft_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        },
         None,
     )
     .expect("inboxes_remove_draft request failed");
@@ -2112,8 +2330,10 @@ fn inboxes_remove_label_inboxes_remove_label_reaches_mock_and_decodes_response()
     let _ = &config;
     let actual = inboxes::inboxes_remove_label(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        inboxes::InboxesRemoveLabelParams {
+            inbox_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+            label_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        },
         None,
     )
     .expect("inboxes_remove_label request failed");
@@ -2135,8 +2355,10 @@ fn inboxes_remove_thread_inboxes_remove_thread_reaches_mock_and_decodes_response
     let _ = &config;
     let actual = inboxes::inboxes_remove_thread(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        inboxes::InboxesRemoveThreadParams {
+            inbox_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+            thread_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        },
         None,
     )
     .expect("inboxes_remove_thread request failed");
@@ -2233,10 +2455,12 @@ fn inboxes_send_draft_inboxes_send_draft_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = inboxes::inboxes_send_draft(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
-        Some(decode(fixture(r#""x""#))),
-        Some(Some(decode(fixture(r#"{"X-Ticket-Id":"4821"}"#)))),
+        inboxes::InboxesSendDraftParams {
+            inbox_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+            draft_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+            idempotency_key: Some(decode(fixture(r#""x""#))),
+            headers: Some(Some(decode(fixture(r#"{"X-Ticket-Id":"4821"}"#)))),
+        },
         None,
     )
     .expect("inboxes_send_draft request failed");
@@ -2256,9 +2480,11 @@ fn inboxes_update_inboxes_update_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = inboxes::inboxes_update(
         &config,
-        decode(fixture(r#""b3e2b2b6-3f0e-4c8e-9ad3-2f43a1e2c7f1""#)),
-        Some(decode(fixture(r#""Customer Support""#))),
-        Some(decode(fixture(r#""Ada from Support""#))),
+        inboxes::InboxesUpdateParams {
+            inbox_id: decode(fixture(r#""b3e2b2b6-3f0e-4c8e-9ad3-2f43a1e2c7f1""#)),
+            name: Some(decode(fixture(r#""Customer Support""#))),
+            from_name: Some(decode(fixture(r#""Ada from Support""#))),
+        },
         None,
     )
     .expect("inboxes_update request failed");
@@ -2278,12 +2504,14 @@ fn inboxes_update_agent_inboxes_update_agent_reaches_mock_and_decodes_response()
     let _ = &config;
     let actual = inboxes::inboxes_update_agent(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
-        Some(Some(decode(fixture(
-            r#""Answer refund questions yourself. Escalate legal threats.""#,
-        )))),
-        Some(Some(decode(fixture(r#""concise_professional""#)))),
-        Some(decode(fixture(r#"["draft_reply","add_labels"]"#))),
+        inboxes::InboxesUpdateAgentParams {
+            inbox_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+            instructions: Some(Some(decode(fixture(
+                r#""Answer refund questions yourself. Escalate legal threats.""#,
+            )))),
+            tone: Some(Some(decode(fixture(r#""concise_professional""#)))),
+            enabled_actions: Some(decode(fixture(r#"["draft_reply","add_labels"]"#))),
+        },
         None,
     )
     .expect("inboxes_update_agent request failed");
@@ -2336,10 +2564,12 @@ fn inboxes_update_label_inboxes_update_label_reaches_mock_and_decodes_response()
     let _ = &config;
     let actual = inboxes::inboxes_update_label(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
-        Some(decode(fixture(r#""Billing""#))),
-        Some(decode(fixture(r##""#F76B15""##))),
+        inboxes::InboxesUpdateLabelParams {
+            inbox_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+            label_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+            name: Some(decode(fixture(r#""Billing""#))),
+            color: Some(decode(fixture(r##""#F76B15""##))),
+        },
         None,
     )
     .expect("inboxes_update_label request failed");
@@ -2393,9 +2623,11 @@ fn list_list_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = receiving_emails::list(
         &config,
-        Some(decode(fixture(r#"1"#))),
-        Some(decode(fixture(r#""00000000-0000-4000-8000-000000000000""#))),
-        Some(decode(fixture(r#""00000000-0000-4000-8000-000000000000""#))),
+        receiving_emails::ListParams {
+            limit: Some(decode(fixture(r#"1"#))),
+            after: Some(decode(fixture(r#""00000000-0000-4000-8000-000000000000""#))),
+            before: Some(decode(fixture(r#""00000000-0000-4000-8000-000000000000""#))),
+        },
         None,
     )
     .expect("list request failed");
@@ -2417,10 +2649,12 @@ fn list_attachments_list_attachments_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = receiving_emails::list_attachments(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
-        Some(decode(fixture(r#"1"#))),
-        Some(decode(fixture(r#""00000000-0000-4000-8000-000000000000""#))),
-        Some(decode(fixture(r#""00000000-0000-4000-8000-000000000000""#))),
+        receiving_emails::ListAttachmentsParams {
+            email_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+            limit: Some(decode(fixture(r#"1"#))),
+            after: Some(decode(fixture(r#""00000000-0000-4000-8000-000000000000""#))),
+            before: Some(decode(fixture(r#""00000000-0000-4000-8000-000000000000""#))),
+        },
         None,
     )
     .expect("list_attachments request failed");
@@ -2442,9 +2676,11 @@ fn list_grants_list_grants_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = oauth::list_grants(
         &config,
-        Some(decode(fixture(r#"1"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""before""#))),
+        oauth::ListGrantsParams {
+            limit: Some(decode(fixture(r#"1"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            before: Some(decode(fixture(r#""before""#))),
+        },
         None,
     )
     .expect("list_grants request failed");
@@ -2496,7 +2732,9 @@ fn logs_get_logs_get_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = logs::logs_get(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        logs::LogsGetParams {
+            log_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        },
         None,
     )
     .expect("logs_get request failed");
@@ -2518,9 +2756,11 @@ fn logs_list_logs_list_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = logs::logs_list(
         &config,
-        Some(decode(fixture(r#"1"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""before""#))),
+        logs::LogsListParams {
+            limit: Some(decode(fixture(r#"1"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            before: Some(decode(fixture(r#""before""#))),
+        },
         None,
     )
     .expect("logs_list request failed");
@@ -2535,20 +2775,26 @@ fn logs_list_logs_list_reaches_mock_and_decodes_response() {
 }
 
 #[test]
-fn revoke_grant_revoke_grant_reaches_mock_and_decodes_response() {
+fn revoke_oauth_grant_revoke_oauth_grant_reaches_mock_and_decodes_response() {
     let Some(config) = configured_client() else {
         return;
     };
     let _ = &config;
-    let actual = oauth::revoke_grant(&config, decode(fixture(r#""oauth_grant-1""#)), None)
-        .expect("revoke_grant request failed");
+    let actual = oauth::revoke_oauth_grant(
+        &config,
+        oauth::RevokeOauthGrantParams {
+            oauth_grant_id: decode(fixture(r#""oauth_grant-1""#)),
+        },
+        None,
+    )
+    .expect("revoke_oauth_grant request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"object":"oauth_grant","id":"id-1","revoked_at":"2023-10-06T23:47:56.678Z","revoked_reason":"revoked_reason"}"#,
     );
     assert!(
         representative(&actual, &expected),
-        "revoke_grant decoded {actual}, expected representative {expected}"
+        "revoke_oauth_grant decoded {actual}, expected representative {expected}"
     );
 }
 
@@ -2560,9 +2806,11 @@ fn segments_create_segments_create_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = segments::segments_create(
         &config,
-        decode(fixture(r#""Example Name""#)),
-        Some(decode(fixture(r#""audience-1""#))),
-        Some(decode(fixture(r#"{}"#))),
+        segments::SegmentsCreateParams {
+            name: decode(fixture(r#""Example Name""#)),
+            audience_id: Some(decode(fixture(r#""audience-1""#))),
+            filter: Some(decode(fixture(r#"{}"#))),
+        },
         None,
     )
     .expect("segments_create request failed");
@@ -2580,8 +2828,14 @@ fn segments_get_segments_get_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = segments::segments_get(&config, decode(fixture(r#""id-1""#)), None)
-        .expect("segments_get request failed");
+    let actual = segments::segments_get(
+        &config,
+        segments::SegmentsGetParams {
+            id: decode(fixture(r#""id-1""#)),
+        },
+        None,
+    )
+    .expect("segments_get request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"id":"id-1","object":"segment","name":"Active Users","audience_id":"audience-1","filter":{},"created_at":"2023-10-06 23:47:56.678+00"}"#,
@@ -2600,9 +2854,11 @@ fn segments_list_segments_list_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = segments::segments_list(
         &config,
-        Some(decode(fixture(r#"1"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""before""#))),
+        segments::SegmentsListParams {
+            limit: Some(decode(fixture(r#"1"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            before: Some(decode(fixture(r#""before""#))),
+        },
         None,
     )
     .expect("segments_list request failed");
@@ -2624,10 +2880,12 @@ fn segments_list_contacts_segments_list_contacts_reaches_mock_and_decodes_respon
     let _ = &config;
     let actual = segments::segments_list_contacts(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
-        Some(decode(fixture(r#"1"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""before""#))),
+        segments::SegmentsListContactsParams {
+            id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+            limit: Some(decode(fixture(r#"1"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            before: Some(decode(fixture(r#""before""#))),
+        },
         None,
     )
     .expect("segments_list_contacts request failed");
@@ -2647,8 +2905,14 @@ fn segments_remove_segments_remove_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = segments::segments_remove(&config, decode(fixture(r#""id-1""#)), None)
-        .expect("segments_remove request failed");
+    let actual = segments::segments_remove(
+        &config,
+        segments::SegmentsRemoveParams {
+            id: decode(fixture(r#""id-1""#)),
+        },
+        None,
+    )
+    .expect("segments_remove request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(r#"{"id":"id-1","object":"segment","deleted":true}"#);
     assert!(
@@ -2665,8 +2929,10 @@ fn segments_update_segments_update_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = segments::segments_update(
         &config,
-        decode(fixture(r#""id-1""#)),
-        decode(fixture(r#""Example Name""#)),
+        segments::SegmentsUpdateParams {
+            id: decode(fixture(r#""id-1""#)),
+            name: decode(fixture(r#""Example Name""#)),
+        },
         None,
     )
     .expect("segments_update request failed");
@@ -2686,7 +2952,9 @@ fn suppressions_add_suppressions_add_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = suppressions::suppressions_add(
         &config,
-        decode(fixture(r#""steve.wozniak@gmail.com""#)),
+        suppressions::SuppressionsAddParams {
+            email: decode(fixture(r#""steve.wozniak@gmail.com""#)),
+        },
         None,
     )
     .expect("suppressions_add request failed");
@@ -2707,7 +2975,9 @@ fn suppressions_batch_add_suppressions_batch_add_reaches_mock_and_decodes_respon
     let _ = &config;
     let actual = suppressions::suppressions_batch_add(
         &config,
-        decode(fixture(r#"["steve.wozniak@gmail.com"]"#)),
+        suppressions::SuppressionsBatchAddParams {
+            emails: decode(fixture(r#"["steve.wozniak@gmail.com"]"#)),
+        },
         None,
     )
     .expect("suppressions_batch_add request failed");
@@ -2729,10 +2999,12 @@ fn suppressions_batch_remove_suppressions_batch_remove_reaches_mock_and_decodes_
     let _ = &config;
     let actual = suppressions::suppressions_batch_remove(
         &config,
-        Some(decode(fixture(r#"["steve.wozniak@gmail.com"]"#))),
-        Some(decode(fixture(
-            r#"["e169aa45-1ecf-4183-9955-b1499d5701d3"]"#,
-        ))),
+        suppressions::SuppressionsBatchRemoveParams {
+            emails: Some(decode(fixture(r#"["steve.wozniak@gmail.com"]"#))),
+            ids: Some(decode(fixture(
+                r#"["e169aa45-1ecf-4183-9955-b1499d5701d3"]"#,
+            ))),
+        },
         None,
     )
     .expect("suppressions_batch_remove request failed");
@@ -2752,8 +3024,14 @@ fn suppressions_get_suppressions_get_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = suppressions::suppressions_get(&config, decode(fixture(r#""suppression""#)), None)
-        .expect("suppressions_get request failed");
+    let actual = suppressions::suppressions_get(
+        &config,
+        suppressions::SuppressionsGetParams {
+            suppression: decode(fixture(r#""suppression""#)),
+        },
+        None,
+    )
+    .expect("suppressions_get request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"object":"suppression","id":"e169aa45-1ecf-4183-9955-b1499d5701d3","email":"steve.wozniak@gmail.com","origin":"manual","source_id":"479e3145-dd38-476b-932c-529ceb705947","created_at":"2023-10-06 23:47:56.678+00"}"#,
@@ -2772,10 +3050,12 @@ fn suppressions_list_suppressions_list_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = suppressions::suppressions_list(
         &config,
-        Some(decode(fixture(r#""bounce""#))),
-        Some(decode(fixture(r#"1"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""before""#))),
+        suppressions::SuppressionsListParams {
+            origin: Some(decode(fixture(r#""bounce""#))),
+            limit: Some(decode(fixture(r#"1"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            before: Some(decode(fixture(r#""before""#))),
+        },
         None,
     )
     .expect("suppressions_list request failed");
@@ -2795,9 +3075,14 @@ fn suppressions_remove_suppressions_remove_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual =
-        suppressions::suppressions_remove(&config, decode(fixture(r#""suppression""#)), None)
-            .expect("suppressions_remove request failed");
+    let actual = suppressions::suppressions_remove(
+        &config,
+        suppressions::SuppressionsRemoveParams {
+            suppression: decode(fixture(r#""suppression""#)),
+        },
+        None,
+    )
+    .expect("suppressions_remove request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"object":"suppression","id":"e169aa45-1ecf-4183-9955-b1499d5701d3","deleted":true}"#,
@@ -2845,8 +3130,14 @@ fn templates_duplicate_templates_duplicate_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = templates::templates_duplicate(&config, decode(fixture(r#""id-1""#)), None)
-        .expect("templates_duplicate request failed");
+    let actual = templates::templates_duplicate(
+        &config,
+        templates::TemplatesDuplicateParams {
+            id: decode(fixture(r#""id-1""#)),
+        },
+        None,
+    )
+    .expect("templates_duplicate request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(r#"{"id":"id-1","object":"template"}"#);
     assert!(
@@ -2861,8 +3152,14 @@ fn templates_get_templates_get_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = templates::templates_get(&config, decode(fixture(r#""id-1""#)), None)
-        .expect("templates_get request failed");
+    let actual = templates::templates_get(
+        &config,
+        templates::TemplatesGetParams {
+            id: decode(fixture(r#""id-1""#)),
+        },
+        None,
+    )
+    .expect("templates_get request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"object":"template","id":"id-1","current_version_id":"current_version-1","name":"Example Name","alias":"alias","from":"user@example.com","subject":"subject","reply_to":["reply_to"],"html":"html","text":"text","variables":[{"id":"id-1","key":"key","type":"string","fallback_value":"fallback_value","created_at":"2023-10-06 23:47:56.678+00","updated_at":"2023-10-06 23:47:56.678+00"}],"created_at":"2023-10-06 23:47:56.678+00","updated_at":"2023-10-06 23:47:56.678+00","status":"draft","published_at":"2023-10-06 23:47:56.678+00","has_unpublished_versions":false}"#,
@@ -2881,9 +3178,11 @@ fn templates_list_templates_list_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = templates::templates_list(
         &config,
-        Some(decode(fixture(r#"1"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""before""#))),
+        templates::TemplatesListParams {
+            limit: Some(decode(fixture(r#"1"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            before: Some(decode(fixture(r#""before""#))),
+        },
         None,
     )
     .expect("templates_list request failed");
@@ -2903,8 +3202,14 @@ fn templates_publish_templates_publish_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = templates::templates_publish(&config, decode(fixture(r#""id-1""#)), None)
-        .expect("templates_publish request failed");
+    let actual = templates::templates_publish(
+        &config,
+        templates::TemplatesPublishParams {
+            id: decode(fixture(r#""id-1""#)),
+        },
+        None,
+    )
+    .expect("templates_publish request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(r#"{"id":"id-1","object":"template"}"#);
     assert!(
@@ -2919,8 +3224,14 @@ fn templates_remove_templates_remove_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = templates::templates_remove(&config, decode(fixture(r#""id-1""#)), None)
-        .expect("templates_remove request failed");
+    let actual = templates::templates_remove(
+        &config,
+        templates::TemplatesRemoveParams {
+            id: decode(fixture(r#""id-1""#)),
+        },
+        None,
+    )
+    .expect("templates_remove request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(r#"{"object":"template","id":"id-1","deleted":true}"#);
     assert!(
@@ -2969,10 +3280,12 @@ fn topics_create_topics_create_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = topics::topics_create(
         &config,
-        decode(fixture(r#""Example Name""#)),
-        decode(fixture(r#""opt_in""#)),
-        Some(decode(fixture(r#""example text""#))),
-        Some(decode(fixture(r#""private""#))),
+        topics::TopicsCreateParams {
+            name: decode(fixture(r#""Example Name""#)),
+            default_subscription: decode(fixture(r#""opt_in""#)),
+            description: Some(decode(fixture(r#""example text""#))),
+            visibility: Some(decode(fixture(r#""private""#))),
+        },
         None,
     )
     .expect("topics_create request failed");
@@ -2990,8 +3303,14 @@ fn topics_get_topics_get_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = topics::topics_get(&config, decode(fixture(r#""id-1""#)), None)
-        .expect("topics_get request failed");
+    let actual = topics::topics_get(
+        &config,
+        topics::TopicsGetParams {
+            id: decode(fixture(r#""id-1""#)),
+        },
+        None,
+    )
+    .expect("topics_get request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"id":"id-1","object":"topic","name":"Newsletter","description":"example text","default_subscription":"opt_in","visibility":"public","created_at":"2023-10-06 23:47:56.678+00"}"#,
@@ -3010,9 +3329,11 @@ fn topics_list_topics_list_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = topics::topics_list(
         &config,
-        Some(decode(fixture(r#"1"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""before""#))),
+        topics::TopicsListParams {
+            limit: Some(decode(fixture(r#"1"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            before: Some(decode(fixture(r#""before""#))),
+        },
         None,
     )
     .expect("topics_list request failed");
@@ -3032,8 +3353,14 @@ fn topics_remove_topics_remove_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = topics::topics_remove(&config, decode(fixture(r#""id-1""#)), None)
-        .expect("topics_remove request failed");
+    let actual = topics::topics_remove(
+        &config,
+        topics::TopicsRemoveParams {
+            id: decode(fixture(r#""id-1""#)),
+        },
+        None,
+    )
+    .expect("topics_remove request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(r#"{"id":"id-1","object":"topic","deleted":true}"#);
     assert!(
@@ -3050,10 +3377,12 @@ fn topics_update_topics_update_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = topics::topics_update(
         &config,
-        decode(fixture(r#""id-1""#)),
-        Some(decode(fixture(r#""Example Name""#))),
-        Some(decode(fixture(r#""example text""#))),
-        Some(decode(fixture(r#""public""#))),
+        topics::TopicsUpdateParams {
+            id: decode(fixture(r#""id-1""#)),
+            name: Some(decode(fixture(r#""Example Name""#))),
+            description: Some(decode(fixture(r#""example text""#))),
+            visibility: Some(decode(fixture(r#""public""#))),
+        },
         None,
     )
     .expect("topics_update request failed");
@@ -3090,10 +3419,12 @@ fn webhooks_create_webhooks_create_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = webhooks::webhooks_create(
         &config,
-        decode(fixture(r#""https://webhook.example.com/handler""#)),
-        decode(fixture(
-            r#"["email.sent","email.delivered","email.bounced","email.suppressed"]"#,
-        )),
+        webhooks::WebhooksCreateParams {
+            endpoint: decode(fixture(r#""https://webhook.example.com/handler""#)),
+            events: decode(fixture(
+                r#"["email.sent","email.delivered","email.bounced","email.suppressed"]"#,
+            )),
+        },
         None,
     )
     .expect("webhooks_create request failed");
@@ -3115,7 +3446,9 @@ fn webhooks_get_webhooks_get_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = webhooks::webhooks_get(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        webhooks::WebhooksGetParams {
+            webhook_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        },
         None,
     )
     .expect("webhooks_get request failed");
@@ -3137,8 +3470,10 @@ fn webhooks_get_event_webhooks_get_event_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = webhooks::webhooks_get_event(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
-        decode(fixture(r#""event-1""#)),
+        webhooks::WebhooksGetEventParams {
+            webhook_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+            event_id: decode(fixture(r#""event-1""#)),
+        },
         None,
     )
     .expect("webhooks_get_event request failed");
@@ -3160,9 +3495,11 @@ fn webhooks_list_webhooks_list_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = webhooks::webhooks_list(
         &config,
-        Some(decode(fixture(r#"1"#))),
-        Some(decode(fixture(r#""00000000-0000-4000-8000-000000000000""#))),
-        Some(decode(fixture(r#""00000000-0000-4000-8000-000000000000""#))),
+        webhooks::WebhooksListParams {
+            limit: Some(decode(fixture(r#"1"#))),
+            after: Some(decode(fixture(r#""00000000-0000-4000-8000-000000000000""#))),
+            before: Some(decode(fixture(r#""00000000-0000-4000-8000-000000000000""#))),
+        },
         None,
     )
     .expect("webhooks_list request failed");
@@ -3184,10 +3521,12 @@ fn webhooks_list_event_attempts_webhooks_list_event_attempts_reaches_mock_and_de
     let _ = &config;
     let actual = webhooks::webhooks_list_event_attempts(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
-        decode(fixture(r#""event-1""#)),
-        Some(decode(fixture(r#"1"#))),
-        Some(decode(fixture(r#""after""#))),
+        webhooks::WebhooksListEventAttemptsParams {
+            webhook_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+            event_id: decode(fixture(r#""event-1""#)),
+            limit: Some(decode(fixture(r#"1"#))),
+            after: Some(decode(fixture(r#""after""#))),
+        },
         None,
     )
     .expect("webhooks_list_event_attempts request failed");
@@ -3209,9 +3548,11 @@ fn webhooks_list_events_webhooks_list_events_reaches_mock_and_decodes_response()
     let _ = &config;
     let actual = webhooks::webhooks_list_events(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
-        Some(decode(fixture(r#"1"#))),
-        Some(decode(fixture(r#""after""#))),
+        webhooks::WebhooksListEventsParams {
+            webhook_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+            limit: Some(decode(fixture(r#"1"#))),
+            after: Some(decode(fixture(r#""after""#))),
+        },
         None,
     )
     .expect("webhooks_list_events request failed");
@@ -3233,7 +3574,9 @@ fn webhooks_remove_webhooks_remove_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = webhooks::webhooks_remove(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        webhooks::WebhooksRemoveParams {
+            webhook_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        },
         None,
     )
     .expect("webhooks_remove request failed");
@@ -3255,8 +3598,10 @@ fn webhooks_replay_event_webhooks_replay_event_reaches_mock_and_decodes_response
     let _ = &config;
     let actual = webhooks::webhooks_replay_event(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
-        decode(fixture(r#""event-1""#)),
+        webhooks::WebhooksReplayEventParams {
+            webhook_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+            event_id: decode(fixture(r#""event-1""#)),
+        },
         None,
     )
     .expect("webhooks_replay_event request failed");
@@ -3277,7 +3622,9 @@ fn webhooks_rotate_signing_secret_webhooks_rotate_signing_secret_reaches_mock_an
     let _ = &config;
     let actual = webhooks::webhooks_rotate_signing_secret(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        webhooks::WebhooksRotateSigningSecretParams {
+            webhook_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+        },
         None,
     )
     .expect("webhooks_rotate_signing_secret request failed");
@@ -3299,12 +3646,14 @@ fn webhooks_update_webhooks_update_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = webhooks::webhooks_update(
         &config,
-        decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
-        Some(decode(fixture(
-            r#""https://webhook.example.com/new-handler""#,
-        ))),
-        Some(decode(fixture(r#"["email.sent","email.delivered"]"#))),
-        Some(decode(fixture(r#""enabled""#))),
+        webhooks::WebhooksUpdateParams {
+            webhook_id: decode(fixture(r#""00000000-0000-4000-8000-000000000000""#)),
+            endpoint: Some(decode(fixture(
+                r#""https://webhook.example.com/new-handler""#,
+            ))),
+            events: Some(decode(fixture(r#"["email.sent","email.delivered"]"#))),
+            status: Some(decode(fixture(r#""enabled""#))),
+        },
         None,
     )
     .expect("webhooks_update request failed");

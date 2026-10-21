@@ -7,6 +7,13 @@ use crate::errors::SdkError;
 use crate::types::{ListOAuthGrantsResponse, RevokeOAuthGrantResponse};
 use crate::validation::{validate_range, RangeOpts};
 
+#[derive(Debug, Clone, Default)]
+pub struct ListGrantsParams {
+    pub limit: Option<i64>,
+    pub after: Option<String>,
+    pub before: Option<String>,
+}
+
 /// Lists OAuth grants available to the authenticated user. Use `after` or `before` to navigate the results with a cursor, and `limit` to control the number of grants returned.
 ///
 /// # Arguments
@@ -16,11 +23,14 @@ use crate::validation::{validate_range, RangeOpts};
 /// * `before` - Return items before this cursor.
 pub fn list_grants(
     config: &ClientConfig,
-    limit: Option<i64>,
-    after: Option<String>,
-    before: Option<String>,
+    params: ListGrantsParams,
     options: Option<&RequestOptions>,
 ) -> Result<ListOAuthGrantsResponse, SdkError> {
+    let ListGrantsParams {
+        limit,
+        after,
+        before,
+    } = params;
     if let Some(ref limit_v) = limit {
         validate_range(
             "limit",
@@ -59,16 +69,22 @@ pub fn list_grants(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct RevokeOauthGrantParams {
+    pub oauth_grant_id: String,
+}
+
 /// Revokes an OAuth grant, removing the authorization associated with it. Supply the grant's ID to identify which authorization to revoke. The response includes the revocation time and reason.
 ///
 /// # Arguments
 ///
 /// * `oauth_grant_id` - The OAuth grant ID.
-pub fn revoke_grant(
+pub fn revoke_oauth_grant(
     config: &ClientConfig,
-    oauth_grant_id: String,
+    params: RevokeOauthGrantParams,
     options: Option<&RequestOptions>,
 ) -> Result<RevokeOAuthGrantResponse, SdkError> {
+    let RevokeOauthGrantParams { oauth_grant_id } = params;
     Ok(sdk_request::<RevokeOAuthGrantResponse>(
         "DELETE",
         &format!(
@@ -78,7 +94,7 @@ pub fn revoke_grant(
         config,
         RequestOpts {
             decoder: crate::client::ResponseDecoder::Json,
-            operation_id: "revoke_grant",
+            operation_id: "revoke_oauth_grant",
             options,
             ..Default::default()
         },

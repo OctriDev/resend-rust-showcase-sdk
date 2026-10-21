@@ -10,6 +10,13 @@ use crate::types::{
 };
 use crate::validation::{validate_range, validate_uuid, RangeOpts};
 
+#[derive(Debug, Clone, Default)]
+pub struct SegmentsCreateParams {
+    pub name: String,
+    pub audience_id: Option<String>,
+    pub filter: Option<serde_json::Value>,
+}
+
 /// Creates a segment. Provide a `name` and optionally specify the audience and filter conditions for the segment.
 ///
 /// # Arguments
@@ -19,11 +26,14 @@ use crate::validation::{validate_range, validate_uuid, RangeOpts};
 /// * `filter` - Filter conditions for the segment.
 pub fn segments_create(
     config: &ClientConfig,
-    name: String,
-    audience_id: Option<String>,
-    filter: Option<serde_json::Value>,
+    params: SegmentsCreateParams,
     options: Option<&RequestOptions>,
 ) -> Result<CreateSegmentResponseSuccess, SdkError> {
+    let SegmentsCreateParams {
+        name,
+        audience_id,
+        filter,
+    } = params;
     let mut __body_map = serde_json::Map::new();
     __body_map.insert(
         "name".to_string(),
@@ -73,6 +83,13 @@ pub fn segments_create(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct SegmentsListParams {
+    pub limit: Option<i64>,
+    pub after: Option<String>,
+    pub before: Option<String>,
+}
+
 /// Lists segments. Use `limit` to control the number of results and `after` or `before` to navigate the results with cursors.
 ///
 /// # Arguments
@@ -82,11 +99,14 @@ pub fn segments_create(
 /// * `before` - Return items before this cursor.
 pub fn segments_list(
     config: &ClientConfig,
-    limit: Option<i64>,
-    after: Option<String>,
-    before: Option<String>,
+    params: SegmentsListParams,
     options: Option<&RequestOptions>,
 ) -> Result<ListSegmentsResponseSuccess, SdkError> {
+    let SegmentsListParams {
+        limit,
+        after,
+        before,
+    } = params;
     if let Some(ref limit_v) = limit {
         validate_range(
             "limit",
@@ -125,6 +145,11 @@ pub fn segments_list(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct SegmentsGetParams {
+    pub id: String,
+}
+
 /// Retrieves a segment by its identifier. Use the segment ID to look up a specific segment and its filter conditions.
 ///
 /// # Arguments
@@ -132,9 +157,10 @@ pub fn segments_list(
 /// * `id` - The Segment ID.
 pub fn segments_get(
     config: &ClientConfig,
-    id: String,
+    params: SegmentsGetParams,
     options: Option<&RequestOptions>,
 ) -> Result<GetSegmentResponseSuccess, SdkError> {
+    let SegmentsGetParams { id } = params;
     Ok(sdk_request::<GetSegmentResponseSuccess>(
         "GET",
         &format!("/segments/{}", crate::client::encode_path_segment(&id)),
@@ -149,6 +175,12 @@ pub fn segments_get(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct SegmentsUpdateParams {
+    pub id: String,
+    pub name: String,
+}
+
 /// Updates the name of an existing segment. Supply `name` in the request body to set the segment's name.
 ///
 /// # Arguments
@@ -157,10 +189,10 @@ pub fn segments_get(
 /// * `name` - The name of the segment.
 pub fn segments_update(
     config: &ClientConfig,
-    id: String,
-    name: String,
+    params: SegmentsUpdateParams,
     options: Option<&RequestOptions>,
 ) -> Result<UpdateSegmentResponseSuccess, SdkError> {
+    let SegmentsUpdateParams { id, name } = params;
     let mut __body_map = serde_json::Map::new();
     __body_map.insert(
         "name".to_string(),
@@ -188,6 +220,11 @@ pub fn segments_update(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct SegmentsRemoveParams {
+    pub id: String,
+}
+
 /// Deletes an existing segment. Use the segment ID to select the segment to remove.
 ///
 /// # Arguments
@@ -195,9 +232,10 @@ pub fn segments_update(
 /// * `id` - The Segment ID.
 pub fn segments_remove(
     config: &ClientConfig,
-    id: String,
+    params: SegmentsRemoveParams,
     options: Option<&RequestOptions>,
 ) -> Result<RemoveSegmentResponseSuccess, SdkError> {
+    let SegmentsRemoveParams { id } = params;
     Ok(sdk_request::<RemoveSegmentResponseSuccess>(
         "DELETE",
         &format!("/segments/{}", crate::client::encode_path_segment(&id)),
@@ -212,6 +250,14 @@ pub fn segments_remove(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct SegmentsListContactsParams {
+    pub id: String,
+    pub limit: Option<i64>,
+    pub after: Option<String>,
+    pub before: Option<String>,
+}
+
 /// Lists the contacts in a segment. Use `after` or `before` to navigate results with cursors, and `limit` to control the number of contacts returned.
 ///
 /// # Arguments
@@ -222,12 +268,15 @@ pub fn segments_remove(
 /// * `before` - Return items before this cursor.
 pub fn segments_list_contacts(
     config: &ClientConfig,
-    id: String,
-    limit: Option<i64>,
-    after: Option<String>,
-    before: Option<String>,
+    params: SegmentsListContactsParams,
     options: Option<&RequestOptions>,
 ) -> Result<ListContactsResponseSuccess, SdkError> {
+    let SegmentsListContactsParams {
+        id,
+        limit,
+        after,
+        before,
+    } = params;
     validate_uuid("id", &id)?;
     if let Some(ref limit_v) = limit {
         validate_range(

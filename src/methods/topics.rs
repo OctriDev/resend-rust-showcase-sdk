@@ -11,6 +11,14 @@ use crate::types::{
 };
 use crate::validation::{validate_length, validate_range, LengthOpts, RangeOpts};
 
+#[derive(Debug, Clone, Default)]
+pub struct TopicsCreateParams {
+    pub name: String,
+    pub default_subscription: CreateTopicOptionsDefaultSubscriptionEnum,
+    pub description: Option<String>,
+    pub visibility: Option<CreateTopicOptionsVisibilityEnum>,
+}
+
 /// Creates a topic for organizing contact subscriptions. Supply `name` and `default_subscription`, and optionally set a description and visibility; visibility defaults to private when omitted.
 ///
 /// # Arguments
@@ -24,12 +32,15 @@ use crate::validation::{validate_length, validate_range, LengthOpts, RangeOpts};
 ///   opted-in contacts.
 pub fn topics_create(
     config: &ClientConfig,
-    name: String,
-    default_subscription: CreateTopicOptionsDefaultSubscriptionEnum,
-    description: Option<String>,
-    visibility: Option<CreateTopicOptionsVisibilityEnum>,
+    params: TopicsCreateParams,
     options: Option<&RequestOptions>,
 ) -> Result<CreateTopicResponseSuccess, SdkError> {
+    let TopicsCreateParams {
+        name,
+        default_subscription,
+        description,
+        visibility,
+    } = params;
     validate_length(
         "name",
         &name,
@@ -107,6 +118,13 @@ pub fn topics_create(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct TopicsListParams {
+    pub limit: Option<i64>,
+    pub after: Option<String>,
+    pub before: Option<String>,
+}
+
 /// Lists topics with cursor-based pagination. Use `after` or `before` to navigate results and `limit` to control the number of topics returned.
 ///
 /// # Arguments
@@ -116,11 +134,14 @@ pub fn topics_create(
 /// * `before` - Return items before this cursor.
 pub fn topics_list(
     config: &ClientConfig,
-    limit: Option<i64>,
-    after: Option<String>,
-    before: Option<String>,
+    params: TopicsListParams,
     options: Option<&RequestOptions>,
 ) -> Result<ListTopicsResponseSuccess, SdkError> {
+    let TopicsListParams {
+        limit,
+        after,
+        before,
+    } = params;
     if let Some(ref limit_v) = limit {
         validate_range(
             "limit",
@@ -159,6 +180,11 @@ pub fn topics_list(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct TopicsGetParams {
+    pub id: String,
+}
+
 /// Retrieves a topic by its identifier. Use the topic ID to look up its name, subscription default, visibility, and other details.
 ///
 /// # Arguments
@@ -166,9 +192,10 @@ pub fn topics_list(
 /// * `id` - The Topic ID.
 pub fn topics_get(
     config: &ClientConfig,
-    id: String,
+    params: TopicsGetParams,
     options: Option<&RequestOptions>,
 ) -> Result<GetTopicResponseSuccess, SdkError> {
+    let TopicsGetParams { id } = params;
     Ok(sdk_request::<GetTopicResponseSuccess>(
         "GET",
         &format!("/topics/{}", crate::client::encode_path_segment(&id)),
@@ -183,6 +210,14 @@ pub fn topics_get(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct TopicsUpdateParams {
+    pub id: String,
+    pub name: Option<String>,
+    pub description: Option<String>,
+    pub visibility: Option<UpdateTopicOptionsVisibilityEnum>,
+}
+
 /// Updates the name, description, or visibility of an existing topic. Supply only the fields you want to change; `visibility` must be `public` or `private`.
 ///
 /// # Arguments
@@ -193,12 +228,15 @@ pub fn topics_get(
 /// * `visibility` - The visibility of the topic.
 pub fn topics_update(
     config: &ClientConfig,
-    id: String,
-    name: Option<String>,
-    description: Option<String>,
-    visibility: Option<UpdateTopicOptionsVisibilityEnum>,
+    params: TopicsUpdateParams,
     options: Option<&RequestOptions>,
 ) -> Result<UpdateTopicResponseSuccess, SdkError> {
+    let TopicsUpdateParams {
+        id,
+        name,
+        description,
+        visibility,
+    } = params;
     if let Some(ref name_v) = name {
         validate_length(
             "name",
@@ -271,6 +309,11 @@ pub fn topics_update(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct TopicsRemoveParams {
+    pub id: String,
+}
+
 /// Deletes an existing topic. Use the topic ID to select the topic to remove.
 ///
 /// # Arguments
@@ -278,9 +321,10 @@ pub fn topics_update(
 /// * `id` - The Topic ID.
 pub fn topics_remove(
     config: &ClientConfig,
-    id: String,
+    params: TopicsRemoveParams,
     options: Option<&RequestOptions>,
 ) -> Result<RemoveTopicResponseSuccess, SdkError> {
+    let TopicsRemoveParams { id } = params;
     Ok(sdk_request::<RemoveTopicResponseSuccess>(
         "DELETE",
         &format!("/topics/{}", crate::client::encode_path_segment(&id)),

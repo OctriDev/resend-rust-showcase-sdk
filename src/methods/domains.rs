@@ -159,6 +159,13 @@ pub fn domains_create(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct DomainsListParams {
+    pub limit: Option<i64>,
+    pub after: Option<String>,
+    pub before: Option<String>,
+}
+
 /// Lists domains in the account. Use `limit` to control the number of results and `after` or `before` to navigate the cursor-based list.
 ///
 /// # Arguments
@@ -168,11 +175,14 @@ pub fn domains_create(
 /// * `before` - Return items before this cursor.
 pub fn domains_list(
     config: &ClientConfig,
-    limit: Option<i64>,
-    after: Option<String>,
-    before: Option<String>,
+    params: DomainsListParams,
     options: Option<&RequestOptions>,
 ) -> Result<ListDomainsResponse, SdkError> {
+    let DomainsListParams {
+        limit,
+        after,
+        before,
+    } = params;
     if let Some(ref limit_v) = limit {
         validate_range(
             "limit",
@@ -211,6 +221,11 @@ pub fn domains_list(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct DomainsGetParams {
+    pub domain_id: String,
+}
+
 /// Retrieves a domain by its identifier. Use `domain_id` to select the domain and view its status, configuration, capabilities, and DNS records.
 ///
 /// # Arguments
@@ -218,9 +233,10 @@ pub fn domains_list(
 /// * `domain_id` - The ID of the domain.
 pub fn domains_get(
     config: &ClientConfig,
-    domain_id: String,
+    params: DomainsGetParams,
     options: Option<&RequestOptions>,
 ) -> Result<Domain, SdkError> {
+    let DomainsGetParams { domain_id } = params;
     Ok(sdk_request::<Domain>(
         "GET",
         &format!(
@@ -348,6 +364,11 @@ pub fn domains_update(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct DomainsRemoveParams {
+    pub domain_id: String,
+}
+
 /// Deletes an existing domain. Use `domain_id` to select the domain to remove; the response indicates whether deletion succeeded.
 ///
 /// # Arguments
@@ -355,9 +376,10 @@ pub fn domains_update(
 /// * `domain_id` - The ID of the domain.
 pub fn domains_remove(
     config: &ClientConfig,
-    domain_id: String,
+    params: DomainsRemoveParams,
     options: Option<&RequestOptions>,
 ) -> Result<DeleteDomainResponse, SdkError> {
+    let DomainsRemoveParams { domain_id } = params;
     Ok(sdk_request::<DeleteDomainResponse>(
         "DELETE",
         &format!(
@@ -375,6 +397,11 @@ pub fn domains_remove(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct DomainsVerifyParams {
+    pub domain_id: String,
+}
+
 /// Triggers verification of a domain's DNS records, including DKIM, SPF, and the tracking CNAME when a tracking subdomain is configured. Use this operation after adding the required DNS records to check the domain's verification status.
 ///
 /// Triggers verification of the domain's DNS records including DKIM, SPF, and the tracking CNAME (if a tracking subdomain is configured).
@@ -384,9 +411,10 @@ pub fn domains_remove(
 /// * `domain_id` - The ID of the domain.
 pub fn domains_verify(
     config: &ClientConfig,
-    domain_id: String,
+    params: DomainsVerifyParams,
     options: Option<&RequestOptions>,
 ) -> Result<VerifyDomainResponse, SdkError> {
+    let DomainsVerifyParams { domain_id } = params;
     Ok(sdk_request::<VerifyDomainResponse>(
         "POST",
         &format!(
@@ -521,6 +549,11 @@ pub fn domains_create_claim(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct DomainsGetClaimParams {
+    pub domain_id: String,
+}
+
 /// Retrieves the latest claim for the placeholder domain created by a domain claim. Use the claim status and TXT `record` details to track verification and prove ownership of the claimed domain.
 ///
 /// Retrieve the latest claim for the placeholder domain created by the claim.
@@ -530,9 +563,10 @@ pub fn domains_create_claim(
 /// * `domain_id` - The ID of the placeholder domain created by the claim.
 pub fn domains_get_claim(
     config: &ClientConfig,
-    domain_id: String,
+    params: DomainsGetClaimParams,
     options: Option<&RequestOptions>,
 ) -> Result<DomainClaim, SdkError> {
+    let DomainsGetClaimParams { domain_id } = params;
     Ok(sdk_request::<DomainClaim>(
         "GET",
         &format!(
@@ -550,6 +584,11 @@ pub fn domains_get_claim(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct DomainsVerifyClaimParams {
+    pub domain_id: String,
+}
+
 /// Triggers asynchronous DNS verification and ownership transfer for a domain claim. The claim remains `pending` while verification runs, so retrieve the claim to check its status. Once the claim is `completed`, add the transferred domain's new DKIM records to DNS and verify them with the standard domain verification endpoint.
 ///
 /// Trigger asynchronous DNS verification and ownership transfer for a domain claim. The claim stays `pending` while verification runs; poll the retrieve endpoint for status. Once `completed`, the transferred domain has new DKIM records that must be added to DNS and verified via the standard domain verify endpoint.
@@ -559,9 +598,10 @@ pub fn domains_get_claim(
 /// * `domain_id` - The ID of the placeholder domain created by the claim.
 pub fn domains_verify_claim(
     config: &ClientConfig,
-    domain_id: String,
+    params: DomainsVerifyClaimParams,
     options: Option<&RequestOptions>,
 ) -> Result<DomainClaim, SdkError> {
+    let DomainsVerifyClaimParams { domain_id } = params;
     Ok(sdk_request::<DomainClaim>(
         "POST",
         &format!(

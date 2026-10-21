@@ -10,6 +10,13 @@ use crate::types::{
 };
 use crate::validation::validate_uuid;
 
+#[derive(Debug, Clone, Default)]
+pub struct ListParams {
+    pub limit: Option<i64>,
+    pub after: Option<String>,
+    pub before: Option<String>,
+}
+
 /// Lists received emails with cursor-based pagination. Use `limit` to control the number of results and `after` or `before` to select a pagination cursor; the cursor parameters cannot be used together.
 ///
 /// # Arguments
@@ -21,11 +28,14 @@ use crate::validation::validate_uuid;
 ///   be used with 'after'.
 pub fn list(
     config: &ClientConfig,
-    limit: Option<i64>,
-    after: Option<String>,
-    before: Option<String>,
+    params: ListParams,
     options: Option<&RequestOptions>,
 ) -> Result<ListReceivedEmailsResponse, SdkError> {
+    let ListParams {
+        limit,
+        after,
+        before,
+    } = params;
     if let Some(ref after_v) = after {
         validate_uuid("after", after_v)?;
     }
@@ -59,6 +69,11 @@ pub fn list(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct GetParams {
+    pub email_id: String,
+}
+
 /// Retrieves a received email by its identifier. Use `email_id` to select the email; the response includes its message content, headers, recipients, receipt time, and attachments.
 ///
 /// # Arguments
@@ -66,9 +81,10 @@ pub fn list(
 /// * `email_id` - The ID of the received email.
 pub fn get(
     config: &ClientConfig,
-    email_id: String,
+    params: GetParams,
     options: Option<&RequestOptions>,
 ) -> Result<GetReceivedEmailResponse, SdkError> {
+    let GetParams { email_id } = params;
     validate_uuid("email_id", &email_id)?;
 
     Ok(sdk_request::<GetReceivedEmailResponse>(
@@ -88,6 +104,14 @@ pub fn get(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct ListAttachmentsParams {
+    pub email_id: String,
+    pub limit: Option<i64>,
+    pub after: Option<String>,
+    pub before: Option<String>,
+}
+
 /// Lists attachments for a received email. Use `email_id` to select the email and `after` or `before` to navigate through attachment results.
 ///
 /// # Arguments
@@ -100,12 +124,15 @@ pub fn get(
 ///   Cannot be used with 'after'.
 pub fn list_attachments(
     config: &ClientConfig,
-    email_id: String,
-    limit: Option<i64>,
-    after: Option<String>,
-    before: Option<String>,
+    params: ListAttachmentsParams,
     options: Option<&RequestOptions>,
 ) -> Result<ListAttachmentsResponse, SdkError> {
+    let ListAttachmentsParams {
+        email_id,
+        limit,
+        after,
+        before,
+    } = params;
     validate_uuid("email_id", &email_id)?;
     if let Some(ref after_v) = after {
         validate_uuid("after", after_v)?;
@@ -143,6 +170,12 @@ pub fn list_attachments(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct GetAttachmentParams {
+    pub email_id: String,
+    pub attachment_id: String,
+}
+
 /// Retrieves an attachment belonging to a received email. Use `email_id` to identify the email and `attachment_id` to select its attachment; the response includes a signed download URL and its expiration time.
 ///
 /// # Arguments
@@ -151,10 +184,13 @@ pub fn list_attachments(
 /// * `attachment_id` - The ID of the attachment.
 pub fn get_attachment(
     config: &ClientConfig,
-    email_id: String,
-    attachment_id: String,
+    params: GetAttachmentParams,
     options: Option<&RequestOptions>,
 ) -> Result<RetrievedAttachment, SdkError> {
+    let GetAttachmentParams {
+        email_id,
+        attachment_id,
+    } = params;
     validate_uuid("email_id", &email_id)?;
     validate_uuid("attachment_id", &attachment_id)?;
 
